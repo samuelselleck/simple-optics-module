@@ -18,7 +18,7 @@
     </g>
     <g slot="global">
         <!--Rotation-->
-        <RotationAnchor bind:property={properties.angle} start=180 distance={properties.height/4 + 30}/>
+        <RotationAnchor bind:property={properties.angle} start={Math.PI} distance={properties.height/4 + 100}/>
     </g>
 </OpticsObject>
 

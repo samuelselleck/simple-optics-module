@@ -26,7 +26,7 @@
     </g>
     <g slot="global">
         <RotationAnchor bind:property={properties.angle} distance={properties.height/2 + 30}/>
-        <RotationAnchor bind:property={properties.angle} start=180 distance={properties.height/2 + 30}/>
+        <RotationAnchor bind:property={properties.angle} start={Math.PI} distance={properties.height/2 + 30}/>
     </g>
 </OpticsObject>
 

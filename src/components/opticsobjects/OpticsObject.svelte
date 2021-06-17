@@ -1,4 +1,5 @@
 <script>
+    import { toDegrees } from '../../utils/vectormath.js'
     export let properties = {}
 
     let moving = false;
@@ -21,7 +22,7 @@
     }
 
     $: translation = `translate(${properties.pos.x},${properties.pos.y})`;
-    $: rotation = `rotate(${properties.angle}, 0, 0)`;
+    $: rotation = `rotate(${toDegrees(properties.angle)}, 0, 0)`;
 
 </script>
 

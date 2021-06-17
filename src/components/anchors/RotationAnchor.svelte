@@ -1,4 +1,5 @@
 <script>
+    import { toDegrees, length, mult } from '../../utils/vectormath.js';
     import PropertyAnchor from '../anchors/PropertyAnchor.svelte'
 
     export let property;
@@ -7,20 +8,19 @@
 
 </script>
 
-<g transform={`rotate(${-start}, 0, 0)`}>
+<g transform={`rotate(${-toDegrees(start)}, 0, 0)`}>
 <PropertyAnchor 
     bind:property={property}
-    transform={`rotate(${property}, 0, 0) scale(${distance/200})`}
+    transform={`rotate(${toDegrees(property)}, 0, 0) scale(${distance/200})`}
     behaviour={p => {
-        let norm = Math.sqrt(p.x*p.x + p.y*p.y);
-        let scaling = distance/norm;
-        return {x: p.x*scaling, y: p.y*scaling}
+        let len = length(p)
+        let scaling = distance/len;
+        return mult(p, scaling)
     }}   
-    forwardEval={p => 180/Math.PI*Math.atan2(p.y, p.x)}
+    forwardEval={p => Math.atan2(p.y, p.x)}
     backEval={v => {
         let dist = distance;
-        let radi = v*Math.PI/180;
-        return {x: dist*Math.cos(radi), y: dist*Math.sin(radi)}
+        return {x: dist*Math.cos(v), y: dist*Math.sin(v)}
     }}
     svgIcon="rotation-marker"
 />

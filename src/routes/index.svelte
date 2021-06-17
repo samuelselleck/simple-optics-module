@@ -33,11 +33,9 @@
                     }
                 ]
             break;
-            default: console.log(event.key)
+            //default: console.log(event.key)
         }
     }
-
-    console.log(Beam)
 
 </script>
 
