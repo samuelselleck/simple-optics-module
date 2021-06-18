@@ -1,9 +1,17 @@
 <script>
     import { svgCanvas } from '../stores.js';
-    import Lens from "../components/opticsobjects/Lens.svelte";
-    import Beam from "../components/opticsobjects/Beam.svelte";
-    import GlobalSVG from "../components/GlobalSVG.svelte";
-    import RayLayer from "../components/RayLayer.svelte";
+    import Lens from '../components/opticsobjects/Lens.svelte';
+    import Beam from '../components/opticsobjects/Beam.svelte';
+    import Mirror from '../components/opticsobjects/Mirror.svelte';
+    import GlobalSVG from '../components/GlobalSVG.svelte';
+    import RayLayer from '../components/RayLayer.svelte';
+    import ObjectCreationMenu from '../components/html-controls/ObjectCreationMenu.svelte';
+
+    let typeDict = {
+        "lens": Lens,
+        "beam": Beam,
+        "mirror": Mirror,
+    }
 
     let opticsObjects = []
     let lights = []
@@ -15,60 +23,65 @@
         mousePos.y = event.clientY;
     }
 
-    function key(event) {
-        switch(event.key.toUpperCase()) {
-            case 'L':
+    function createObject(event) {
+        console.log(event.detail.type)
+        switch(event.detail.type) {
+            case 'lens':
                 opticsObjects = [...opticsObjects, 
                     {
-                        type: Lens,
-                        properties: {pos: {x: mousePos.x, y: mousePos.y}, height: 300, focal: 500, angle: 0}
+                        type: "lens",
+                        properties: {pos: {x: 200, y: 200}, height: 300, focal: 500, angle: 0}
                     }
                 ]
             break;
-            case 'B':
+            case 'mirror':
+                opticsObjects = [...opticsObjects, 
+                    {
+                        type: "mirror",
+                        properties: {pos: {x: 200, y: 200}, height: 400, angle: 0}
+                    }
+                ]
+            break;
+            case 'beam':
                 lights = [...lights, 
                     {
-                        type: Beam,
-                        properties: {pos: {x: mousePos.x, y: mousePos.y}, height: 250, angle: 0}
+                        type: "beam",
+                        properties: {pos: {x: 200, y: 200}, height: 250, angle: 0}
                     }
                 ]
             break;
-            //default: console.log(event.key)
+            default: console.log(event.detail.type)
         }
     }
 
 </script>
 
-<svelte:window on:mousemove={moved} on:keydown={key}/>
+<svelte:window on:pointermove={moved}/>
 
 <div class="fill">
-    <div class="ui">
-        <h1 class="ui-element"> </h1>
-    </div>
     <svg class="canvas fill" bind:this={$svgCanvas} xmlns="http://www.w3.org/2000/svg">
         <GlobalSVG/>
 
-        {#each [...opticsObjects, ...lights] as obj}
-            <svelte:component this={obj.type} properties={obj.properties}/>
+        {#each [...lights, ...opticsObjects] as obj}
+            <svelte:component this={typeDict[obj.type]} properties={obj.properties}/>
         {/each}
 
         <RayLayer {lights} {opticsObjects}/>
     </svg>
+    <div class="ui">
+        <ObjectCreationMenu on:creating={createObject}/>
+    </div>
 </div>
 
 <style>
     .canvas {
         background: black;
-        z-index: -1;
     }
 
     .ui {
-        pointer-events: none;
-        z-index: 1;
+        position: absolute;
+        background: blue;
         color: white;
-    }
-
-    .ui-element {
-        pointer-events: visible;
+        pointer-events: none;
     }
 </style>

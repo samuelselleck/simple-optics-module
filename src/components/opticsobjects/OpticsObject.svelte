@@ -26,11 +26,11 @@
 
 </script>
 
-<svelte:window on:mousemove={moved} on:mouseup={up}/>
+<svelte:window on:pointermove={moved} on:pointerup={up}/>
 
 <g transform={translation}>
     <g transform={rotation}>
-        <g class:movable={!moving} on:mousedown={down} >
+        <g class:movable={!moving} on:pointerdown={down} >
         <slot name="object"/>
         </g>
         <slot name="local"/>

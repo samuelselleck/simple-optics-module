@@ -1,6 +1,6 @@
 <script>
     import { mult, sub, add, unitVecFromAngle, div, intersectionParameters, rotate, norm, length, crossSign, angleBetween } from '../utils/vectormath.js';
-
+    import { lightModels, objectModels } from '../model/definitions.js'
     export let opticsObjects;
     export let lights;
 
@@ -16,18 +16,18 @@
 
     function calculateRayPaths() {
         let path = []
+        const maxRayBounces = 100;
 
         for(let i = 0; i < lights.length; i++) {
-            let p = lights[i].properties
-            let dir = unitVecFromAngle(p.angle)
-            let t = mult({x: dir.y, y: -dir.x}, p.height/2)
-            for(let h = -1; h <= 1; h+= 0.2) {
-                let point = add(mult(t, h), p.pos)
-                path.push(`M ${point.x},${point.y}`)
+            let light = lights[i]
+            let rays = lightModels.get(light.type).rays(light.properties);
 
-                let i;
-                let ray = {p: point, r: dir}
-                for(i = 0; i < 1000; i++) {
+            for(let r = 0; r < rays.length; r++) {
+                let ray = rays[r]
+                path.push(`M ${ray.p.x},${ray.p.y}`)
+
+                let j;
+                for(j = 0; j < maxRayBounces; j++) {
                     let hit = calculateHit(ray)
                     if(hit != null) {
                         ray = hit;
@@ -37,7 +37,7 @@
                     }
                 }
 
-                if(i <1000) {
+                if(j < maxRayBounces) {
                     path.push(`l ${ray.r.x*10000}, ${ray.r.y*10000}`)
                 }
             }
@@ -48,7 +48,7 @@
 
     function calculateHit(ray) {
 
-        let closest = Infinity
+        let closest = Infinity;
         let id = null;
         let segmentHit = null;
 
@@ -70,18 +70,9 @@
         }
 
         if(closest < Infinity) {
-            let o = opticsObjects[id].properties
-            let p = add(ray.p, mult(ray.r, closest));
-            let cross = crossSign(segmentHit, ray.r)
-            let normal = norm(rotate(segmentHit, cross*Math.PI/2))
-            let angleIn = angleBetween(ray.r, normal);
-
-            let distVec = sub(o.pos, p);
-            let dist = length(distVec)*crossSign(distVec, ray.r);
-            let angleOut = Math.atan(Math.tan(angleIn) - dist/o.focal);
-            let r = rotate(normal, angleOut);
-
-            return {p, r}
+            let o = opticsObjects[id]
+            let pos = add(ray.p, mult(ray.r, closest));
+            return objectModels.get(o.type).outRay(o.properties, pos, ray.r, segmentHit)
         } else {
             return null;
         }
@@ -95,7 +86,7 @@
 
 </script>
 
-<svelte:window on:mousedown={down} on:mousemove={moved} on:mouseup={up}/>
+<svelte:window on:pointerdown={down} on:pointermove={moved} on:pointerup={up}/>
 
 <path d={pathString}/>
 

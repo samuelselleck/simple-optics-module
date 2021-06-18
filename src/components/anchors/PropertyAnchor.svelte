@@ -35,9 +35,9 @@
 
 </script>
 
-<svelte:window on:mousemove={moved} on:mouseup={up}/>
+<svelte:window on:pointermove={moved} on:pointerup={up}/>
 
-<g class:collapsed={false} bind:this={marker} on:mousedown={down}>
+<g class:collapsed={false} bind:this={marker} on:pointerdown={down}>
     <g class:movable={!moving} transform={`translate(${pos.x}, ${pos.y})`}>
     <use {transform} xlink:href={`#${svgIcon}`}/>
     </g>

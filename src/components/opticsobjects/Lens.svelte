@@ -2,19 +2,40 @@
     import OpticsObject from "./OpticsObject.svelte";
     import TranslationAnchor from '../anchors/TranslationAnchor.svelte'
     import RotationAnchor from '../anchors/RotationAnchor.svelte'
+
+
     export let properties = {pos: {x: 500, y: 500}, height: 300, focal: 500, angle: 0};
 
-    $: lensRadius = properties.focal*2
-    $: path = `
-        M0,${properties.height/2}
-        a${lensRadius},${lensRadius} 0 0,0 0,-${properties.height}
-        a${lensRadius},${lensRadius} 0 0,0 0,${properties.height}
-    `
+    $: path = () => {
+
+        let maxR = 200
+        let h = properties.height
+        let r = properties.focal*2
+
+        if(r > 0) {
+            r = Math.max(r, h)
+            return`
+                M0,${h/2}
+                a${r},${r} 0 0,0 0,-${h}
+                a${r},${r} 0 0,0 0,${h}`
+        } else {
+            r = Math.max(-r, h);
+            let d = r - Math.sqrt(r*r - h*h/4) + h/20
+            return`
+                M${-d},${h/2} 
+                a${r},${r} 0 0,0 0,-${h}
+                h${2*d}
+                a${r},${r} 0 0,0 0,${h}
+                z
+            `
+        }
+    }
+
 </script>
 
 <OpticsObject {properties}>
     <g slot="object">
-        <path d={path} fill="url(#glass)"/>
+        <path d={path()} fill="url(#glass)"/>
         <line class="refraction-line" x1="0" y1={properties.height/2} x2="0" y2={-properties.height/2}/>
     </g>
     <g slot="local">
