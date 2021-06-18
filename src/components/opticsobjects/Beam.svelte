@@ -3,7 +3,7 @@
     import TranslationAnchor from '../anchors/TranslationAnchor.svelte'
     import RotationAnchor from '../anchors/RotationAnchor.svelte'
     
-    export let properties = {pos: {x: 500, y: 500}, angle: 180, height: 300};
+    export let properties;
 
 </script>
 

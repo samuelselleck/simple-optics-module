@@ -1,9 +1,10 @@
 <script>
     import { toLocalCoords} from '../../stores.js'
+    import { length } from '../../utils/vectormath.js';
 
     export let property;
     export let behaviour = p => p;
-    export let forwardEval = p => Math.sqrt(p.x*p.x + p.y*p.y);
+    export let forwardEval = p => length(p);
     export let backEval = v => ({x: v, y: 0});
     export let svgIcon = "anchor-marker";
     export let transform = "";
@@ -38,8 +39,8 @@
 <svelte:window on:pointermove={moved} on:pointerup={up}/>
 
 <g class:collapsed={false} bind:this={marker} on:pointerdown={down}>
-    <g class:movable={!moving} transform={`translate(${pos.x}, ${pos.y})`}>
-    <use {transform} xlink:href={`#${svgIcon}`}/>
+    <g class:movable={!moving} transform="translate({pos.x}, {pos.y})">
+    <use {transform} xlink:href="#{svgIcon}"/>
     </g>
 </g>
 

@@ -4,14 +4,14 @@
     import RotationAnchor from '../anchors/RotationAnchor.svelte'
 
 
-    export let properties = {pos: {x: 500, y: 500}, height: 300, angle: 0};
+    export let properties;
 
 </script>
 
 <OpticsObject {properties}>
     <g slot="object">
-        <line class="hitbox" x1="0" y1={properties.height/2} x2="0" y2={-properties.height/2}/>
         <line class="mirror" x1="0" y1={properties.height/2} x2="0" y2={-properties.height/2}/>
+        <line class="core" x1="0" y1={properties.height/2} x2="0" y2={-properties.height/2}/>
     </g>
     <g slot="local">
         <!--Height-->
@@ -25,13 +25,13 @@
 </OpticsObject>
 
 <style>
-    .mirror {
+    .core {
         stroke:cadetblue;
         stroke-width: 5;
         stroke-linecap: round;
     }
 
-    .hitbox {
+    .mirror {
         stroke: white;
         stroke-width: 10;
         pointer-events: visibleStroke;

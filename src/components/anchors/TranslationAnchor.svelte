@@ -1,5 +1,5 @@
 <script>
-    import { length, mult, norm, project, dot } from '../../utils/vectormath.js';
+    import { mult, norm, project, dot } from '../../utils/vectormath.js';
     import PropertyAnchor from '../anchors/PropertyAnchor.svelte'
 
     export let property;

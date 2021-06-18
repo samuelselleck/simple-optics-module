@@ -1,6 +1,8 @@
 <script>
+import { loop_guard } from 'svelte/internal';
+
     import { toDegrees } from '../../utils/vectormath.js'
-    export let properties = {}
+    export let properties;
 
     let moving = false;
     let anchor = {x: 0, y: 0}

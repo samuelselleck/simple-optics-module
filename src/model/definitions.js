@@ -1,8 +1,32 @@
 import { mult, sub, add, unitVecFromAngle, rotate, project,  norm, length, crossSign, angleBetween } from '../utils/vectormath.js';
 
-export let lightModels = new Map()
+import Lens from '../components/opticsobjects/Lens.svelte';
+import Beam from '../components/opticsobjects/Beam.svelte';
+import Mirror from '../components/opticsobjects/Mirror.svelte';
 
-lightModels.set("beam", {
+
+export let definitions = new Map()
+export let emmiters = []
+export let manipulators = []
+
+
+function addApparatus(type, definition, create) {
+    definition.build = pos => ({ type, properties: Object.assign(create(), {type, pos, angle: 0})})
+    definitions.set(type, definition)
+
+    //Any object with the rays property in some way emmits light
+    if(definition.rays != undefined) {
+        emmiters.push(type)
+    }
+    //Any object with the refracted property in some way bends light
+    if(definition.refracted != undefined) {
+        manipulators.push(type)
+    }
+}
+
+addApparatus("beam", {
+    component: Beam,
+
     rays: function(properties) {
         let rays = []
         let r = unitVecFromAngle(properties.angle)
@@ -14,12 +38,13 @@ lightModels.set("beam", {
         }
         return rays;
     }
-})
 
-export let objectModels = new Map()
+}, () => ({height: 250}))
 
-objectModels.set("lens", {
-    outRay: function(properties, p, dir, segment) {
+addApparatus("lens", {
+    component:Lens,
+
+    refracted: function(properties, p, dir, segment) {
         let cross = crossSign(segment, dir)
         let normal = norm(rotate(segment, cross*Math.PI/2))
         let angleIn = angleBetween(dir, normal);
@@ -30,13 +55,20 @@ objectModels.set("lens", {
         let r = rotate(normal, angleOut);
         return {p, r}
     }
-})
+}, () => ({height: 300, focal: 500}))
 
-objectModels.set("mirror", {
-    outRay: function(properties, p, dir, segment) {
+addApparatus("mirror", {
+    component: Mirror,
+
+    refracted: function(properties, p, dir, segment) {
         let l = project(dir, segment)
         let d = sub(l, dir)
         let r = add(d, l)
         return {p, r}
     }
-})
+
+}, () => ({height: 400}))
+
+
+console.log(emmiters)
+console.log(manipulators)

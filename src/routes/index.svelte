@@ -1,20 +1,12 @@
 <script>
     import { svgCanvas } from '../stores.js';
-    import Lens from '../components/opticsobjects/Lens.svelte';
-    import Beam from '../components/opticsobjects/Beam.svelte';
-    import Mirror from '../components/opticsobjects/Mirror.svelte';
     import GlobalSVG from '../components/GlobalSVG.svelte';
     import RayLayer from '../components/RayLayer.svelte';
     import ObjectCreationMenu from '../components/html-controls/ObjectCreationMenu.svelte';
+    import { definitions } from '../model/definitions.js'
+import { get } from 'svelte/store';
 
-    let typeDict = {
-        "lens": Lens,
-        "beam": Beam,
-        "mirror": Mirror,
-    }
-
-    let opticsObjects = []
-    let lights = []
+    let apparatus = []
 
     let mousePos = {x: 0, y: 0}
 
@@ -24,34 +16,8 @@
     }
 
     function createObject(event) {
-        console.log(event.detail.type)
-        switch(event.detail.type) {
-            case 'lens':
-                opticsObjects = [...opticsObjects, 
-                    {
-                        type: "lens",
-                        properties: {pos: {x: 200, y: 200}, height: 300, focal: 500, angle: 0}
-                    }
-                ]
-            break;
-            case 'mirror':
-                opticsObjects = [...opticsObjects, 
-                    {
-                        type: "mirror",
-                        properties: {pos: {x: 200, y: 200}, height: 400, angle: 0}
-                    }
-                ]
-            break;
-            case 'beam':
-                lights = [...lights, 
-                    {
-                        type: "beam",
-                        properties: {pos: {x: 200, y: 200}, height: 250, angle: 0}
-                    }
-                ]
-            break;
-            default: console.log(event.detail.type)
-        }
+        apparatus = [...apparatus, definitions.get(event.detail.type).build({x: 200, y: 200})]
+        console.log(apparatus)
     }
 
 </script>
@@ -59,18 +25,21 @@
 <svelte:window on:pointermove={moved}/>
 
 <div class="fill">
+
+    <!--SVG Layer-->
     <svg class="canvas fill" bind:this={$svgCanvas} xmlns="http://www.w3.org/2000/svg">
         <GlobalSVG/>
-
-        {#each [...lights, ...opticsObjects] as obj}
-            <svelte:component this={typeDict[obj.type]} properties={obj.properties}/>
+        {#each apparatus as o}
+            <svelte:component this={definitions.get(o.type).component} properties={o.properties}/>
         {/each}
-
-        <RayLayer {lights} {opticsObjects}/>
+        <RayLayer {apparatus}/>
     </svg>
+
+    <!--HTML Controls Layer-->
     <div class="ui">
-        <ObjectCreationMenu on:creating={createObject}/>
+        <ObjectCreationMenu items={Object.keys(definitions)} on:creating={createObject}/>
     </div>
+
 </div>
 
 <style>

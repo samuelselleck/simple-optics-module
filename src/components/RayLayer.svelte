@@ -1,26 +1,26 @@
 <script>
     import { mult, sub, add, unitVecFromAngle, div, intersectionParameters, rotate, norm, length, crossSign, angleBetween } from '../utils/vectormath.js';
-    import { lightModels, objectModels } from '../model/definitions.js'
-    export let opticsObjects;
-    export let lights;
+    import { definitions, emmiters, manipulators } from '../model/definitions.js'
+
+    export let apparatus;
 
     let update;
-
     let down = () => update = true
     let up = () => update = false
 
 
-    $: opticsObjects, lights, calculateRayPaths();
-    
+    $: lights = apparatus.filter(o => emmiters.includes(o.type));
+    $: objects = apparatus.filter(o => manipulators.includes(o.type));
+    $: apparatus, calculateRayPaths();
+
     let pathString = "";
 
     function calculateRayPaths() {
         let path = []
         const maxRayBounces = 100;
-
         for(let i = 0; i < lights.length; i++) {
             let light = lights[i]
-            let rays = lightModels.get(light.type).rays(light.properties);
+            let rays = definitions.get(light.type).rays(light.properties);
 
             for(let r = 0; r < rays.length; r++) {
                 let ray = rays[r]
@@ -52,8 +52,8 @@
         let id = null;
         let segmentHit = null;
 
-        for(let i = 0; i < opticsObjects.length; i++) {
-            let o = opticsObjects[i].properties
+        for(let i = 0; i < objects.length; i++) {
+            let o = objects[i].properties
             let segment = mult(unitVecFromAngle(o.angle + Math.PI/2), o.height)
             let origin = sub(o.pos, div(segment, 2))
             let params = intersectionParameters(ray.p, ray.r, origin, segment)
@@ -70,9 +70,9 @@
         }
 
         if(closest < Infinity) {
-            let o = opticsObjects[id]
+            let o = objects[id]
             let pos = add(ray.p, mult(ray.r, closest));
-            return objectModels.get(o.type).outRay(o.properties, pos, ray.r, segmentHit)
+            return definitions.get(o.type).refracted(o.properties, pos, ray.r, segmentHit)
         } else {
             return null;
         }

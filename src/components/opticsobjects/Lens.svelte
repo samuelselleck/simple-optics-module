@@ -4,21 +4,21 @@
     import RotationAnchor from '../anchors/RotationAnchor.svelte'
 
 
-    export let properties = {pos: {x: 500, y: 500}, height: 300, focal: 500, angle: 0};
+    export let properties;
 
     $: path = () => {
 
-        let maxR = 200
         let h = properties.height
         let r = properties.focal*2
 
-        if(r > 0) {
+        if(r > 0) { //Convex
             r = Math.max(r, h)
             return`
                 M0,${h/2}
                 a${r},${r} 0 0,0 0,-${h}
                 a${r},${r} 0 0,0 0,${h}`
-        } else {
+
+        } else { //Concave
             r = Math.max(-r, h);
             let d = r - Math.sqrt(r*r - h*h/4) + h/20
             return`
@@ -26,8 +26,7 @@
                 a${r},${r} 0 0,0 0,-${h}
                 h${2*d}
                 a${r},${r} 0 0,0 0,${h}
-                z
-            `
+                z`
         }
     }
 
