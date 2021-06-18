@@ -67,7 +67,7 @@ export function norm(v) {
 
 export function project(v, u) {
     let n = norm(u)
-    return mult(n, dot(p, n))
+    return mult(n, dot(v, n))
 }
 
 export function intersectionParameters(p1, v1, p2, v2) {
