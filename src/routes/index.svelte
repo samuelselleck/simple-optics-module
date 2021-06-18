@@ -4,7 +4,7 @@
     import RayLayer from '../components/RayLayer.svelte';
     import ObjectCreationMenu from '../components/html-controls/ObjectCreationMenu.svelte';
     import { definitions } from '../model/definitions.js'
-import { get } from 'svelte/store';
+    import { selectedApparatus } from '../stores.js'
 
     let apparatus = []
 
@@ -17,7 +17,11 @@ import { get } from 'svelte/store';
 
     function createObject(event) {
         apparatus = [...apparatus, definitions.get(event.detail.type).build({x: 200, y: 200})]
-        console.log(apparatus)
+    }
+
+    function deleteSelected() {
+        apparatus = apparatus.filter(o => o.properties.id != $selectedApparatus)
+        $selectedApparatus = null;
     }
 
 </script>
@@ -37,7 +41,8 @@ import { get } from 'svelte/store';
 
     <!--HTML Controls Layer-->
     <div class="ui">
-        <ObjectCreationMenu items={Object.keys(definitions)} on:creating={createObject}/>
+        <ObjectCreationMenu on:creating={createObject}/>
+        <button on:click={deleteSelected}> Delete Selected </button>
     </div>
 
 </div>
@@ -49,8 +54,6 @@ import { get } from 'svelte/store';
 
     .ui {
         position: absolute;
-        background: blue;
         color: white;
-        pointer-events: none;
     }
 </style>

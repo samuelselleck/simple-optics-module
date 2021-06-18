@@ -9,9 +9,10 @@ export let definitions = new Map()
 export let emmiters = []
 export let manipulators = []
 
+let idCounter = 0;
 
 function addApparatus(type, definition, create) {
-    definition.build = pos => ({ type, properties: Object.assign(create(), {type, pos, angle: 0})})
+    definition.build = pos => ({type, properties: Object.assign(create(), {type, pos, angle: 0, id: idCounter++})})
     definitions.set(type, definition)
 
     //Any object with the rays property in some way emmits light
@@ -68,7 +69,3 @@ addApparatus("mirror", {
     }
 
 }, () => ({height: 400}))
-
-
-console.log(emmiters)
-console.log(manipulators)

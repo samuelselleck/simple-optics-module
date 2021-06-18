@@ -1,7 +1,6 @@
 <script>
-import { loop_guard } from 'svelte/internal';
-
     import { toDegrees } from '../../utils/vectormath.js'
+    import { selectedApparatus } from '../../stores.js'
     export let properties;
 
     let moving = false;
@@ -10,6 +9,7 @@ import { loop_guard } from 'svelte/internal';
     function down(event) {
         moving = true;
         anchor = {x: properties.pos.x - event.clientX, y: properties.pos.y - event.clientY}
+        $selectedApparatus = properties.id;
     }
 
     function moved(event) {
@@ -25,7 +25,7 @@ import { loop_guard } from 'svelte/internal';
 
     $: translation = `translate(${properties.pos.x},${properties.pos.y})`;
     $: rotation = `rotate(${toDegrees(properties.angle)}, 0, 0)`;
-
+    $: selected = $selectedApparatus == properties.id;
 </script>
 
 <svelte:window on:pointermove={moved} on:pointerup={up}/>
@@ -33,15 +33,23 @@ import { loop_guard } from 'svelte/internal';
 <g transform={translation}>
     <g transform={rotation}>
         <g class:movable={!moving} on:pointerdown={down} >
-        <slot name="object"/>
+            <slot name="object"/>
         </g>
-        <slot name="local"/>
+        <g class:collapsed={!selected}>
+            <slot name="local"/>
+        </g>
     </g>
-    <slot name="global"/>
+    <g class:collapsed={!selected}>
+        <slot name="global"/>
+    </g>
 </g>
 
 <style>
     .movable {
         cursor: move;
+    }
+
+    .collapsed {
+        visibility: collapse;
     }
 </style>

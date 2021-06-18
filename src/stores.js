@@ -2,7 +2,6 @@ import { derived, writable } from 'svelte/store';
 
 
 export const svgCanvas = writable(null);
-
 export const toLocalCoords = derived(svgCanvas, $svgCanvas => {
 
     return (el, pos) => {
@@ -12,3 +11,5 @@ export const toLocalCoords = derived(svgCanvas, $svgCanvas => {
         return point.matrixTransform(el.getScreenCTM().inverse())
     }
 })
+
+export const selectedApparatus = writable(null)
