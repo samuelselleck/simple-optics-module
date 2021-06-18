@@ -30,10 +30,16 @@
 
 <g transform={translation}>
     <g transform={rotation}>
-        <g on:mousedown={down} >
+        <g class:movable={!moving} on:mousedown={down} >
         <slot name="object"/>
         </g>
         <slot name="local"/>
     </g>
     <slot name="global"/>
 </g>
+
+<style>
+    .movable {
+        cursor: move;
+    }
+</style>

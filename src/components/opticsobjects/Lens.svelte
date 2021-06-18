@@ -4,10 +4,11 @@
     import RotationAnchor from '../anchors/RotationAnchor.svelte'
     export let properties = {pos: {x: 500, y: 500}, height: 300, focal: 500, angle: 0};
 
+    $: lensRadius = properties.focal*2
     $: path = `
         M0,${properties.height/2}
-        a${properties.focal},${properties.focal} 0 0,0 0,-${properties.height}
-        a${properties.focal},${properties.focal} 0 0,0 0,${properties.height}
+        a${lensRadius},${lensRadius} 0 0,0 0,-${properties.height}
+        a${lensRadius},${lensRadius} 0 0,0 0,${properties.height}
     `
 </script>
 
@@ -18,8 +19,8 @@
     </g>
     <g slot="local">
         <!--Focal Length-->
-        <TranslationAnchor bind:property={properties.focal} dir={{x: 1, y: 0}} scale=0.1/>
-        <TranslationAnchor bind:property={properties.focal} dir={{x: -1, y: 0}} scale=0.1/>
+        <TranslationAnchor bind:property={properties.focal} dir={{x: 1, y: 0}}/>
+        <TranslationAnchor bind:property={properties.focal} dir={{x: -1, y: 0}}/>
         <!--Height-->
         <TranslationAnchor bind:property={properties.height} dir={{x: 0, y: 1}} scale=0.5/>
         <TranslationAnchor bind:property={properties.height} dir={{x: 0, y: -1}} scale=0.5/>

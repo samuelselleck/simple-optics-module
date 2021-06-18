@@ -42,19 +42,33 @@
 <svelte:window on:mousemove={moved} on:keydown={key}/>
 
 <div class="fill">
-<svg class="canvas fill" bind:this={$svgCanvas} xmlns="http://www.w3.org/2000/svg">
-    <GlobalSVG/>
+    <div class="ui">
+        <h1 class="ui-element"> </h1>
+    </div>
+    <svg class="canvas fill" bind:this={$svgCanvas} xmlns="http://www.w3.org/2000/svg">
+        <GlobalSVG/>
 
-    <RayLayer {lights} {opticsObjects}/>
+        {#each [...opticsObjects, ...lights] as obj}
+            <svelte:component this={obj.type} properties={obj.properties}/>
+        {/each}
 
-    {#each [...opticsObjects, ...lights] as obj}
-        <svelte:component this={obj.type} properties={obj.properties}/>
-	{/each}
-</svg>
+        <RayLayer {lights} {opticsObjects}/>
+    </svg>
 </div>
 
 <style>
     .canvas {
         background: black;
+        z-index: -1;
+    }
+
+    .ui {
+        pointer-events: none;
+        z-index: 1;
+        color: white;
+    }
+
+    .ui-element {
+        pointer-events: visible;
     }
 </style>

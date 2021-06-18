@@ -38,7 +38,7 @@
 <svelte:window on:mousemove={moved} on:mouseup={up}/>
 
 <g class:collapsed={false} bind:this={marker} on:mousedown={down}>
-    <g transform={`translate(${pos.x}, ${pos.y})`}>
+    <g class:movable={!moving} transform={`translate(${pos.x}, ${pos.y})`}>
     <use {transform} xlink:href={`#${svgIcon}`}/>
     </g>
 </g>
@@ -46,5 +46,9 @@
 <style>
     .collapsed {
         visibility: collapse;
+    }
+
+    .movable {
+        cursor: move;
     }
 </style>
