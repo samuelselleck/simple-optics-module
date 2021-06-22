@@ -17,7 +17,7 @@
 
     function calculateRayPaths() {
         let path = []
-        const maxRayBounces = 100;
+        const maxRayBounces = 2;
         for(let i = 0; i < lights.length; i++) {
             let light = lights[i]
             let rays = definitions.get(light.type).rays(light.properties);
@@ -48,31 +48,18 @@
 
     function calculateHit(ray) {
 
-        let closest = Infinity;
-        let id = null;
-        let segmentHit = null;
+        let closest = {dist: Infinity};
 
         for(let i = 0; i < objects.length; i++) {
-            let o = objects[i].properties
-            let segment = mult(unitVecFromAngle(o.angle + Math.PI/2), o.height)
-            let origin = sub(o.pos, div(segment, 2))
-            let params = intersectionParameters(ray.p, ray.r, origin, segment)
-
-            if (params) {
-                if(params.s >= 0&& params.s <= 1) {
-                    if(params.t > 1e-6 && params.t < closest) {
-                        closest = params.t
-                        id = i;
-                        segmentHit = segment;
-                    }
-                }
+            let o = objects[i]
+            let hit = definitions.get(o.type).hit(o.properties, ray)
+            if (hit.dist < closest.dist && hit.dist > 1e-6) {
+                closest = hit;
             }
         }
 
-        if(closest < Infinity) {
-            let o = objects[id]
-            let pos = add(ray.p, mult(ray.r, closest));
-            return definitions.get(o.type).refracted(o.properties, pos, ray.r, segmentHit)
+        if(closest.dist < Infinity) {
+            return closest.refracted()
         } else {
             return null;
         }

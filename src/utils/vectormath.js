@@ -36,11 +36,13 @@ export function toDegrees(angle) {
     return angle*180/PI;
 }
 
+export function angle(v) {
+    return Math.atan2(v.y, v.x)
+}
+
 export function angleBetween(v1, v2) {
     let angle = Math.atan2(v1.y, v1.x) - Math.atan2(v2.y, v2.x)
-    if (angle > PI)        { angle -= 2 * PI; }
-    else if (angle <= -PI) { angle += 2 * PI; }
-    return angle
+    return boundAngle(angle)
 }
 
 export function unitVecFromAngle(angle) {
@@ -51,6 +53,12 @@ export function rotate(v, angle) {
     let sin = Math.sin(angle)
     let cos = Math.cos(angle)
     return {x: v.x*cos - v.y*sin, y: v.x*sin + v.y*cos}
+}
+
+export function boundAngle(angle) {
+    while(angle > PI) angle -= 2*PI;
+    while(angle <= -PI) angle += 2*PI;
+    return angle
 }
 
 export function lengthSquared(v) {
@@ -81,4 +89,15 @@ export function intersectionParameters(p1, v1, p2, v2) {
     return {s, t}
 }
 
+export function decompose(u, p, v) {
+    let x = sub(u, p)
+    let y = project(x, v)
+    return {projection: y, normal: sub(x, y)}
+}
+
+export function reflect(u, v) {
+    let l = project(u, v)
+    let d = sub(l, u)
+    return add(d, l)
+}
 

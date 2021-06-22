@@ -3,6 +3,7 @@
     import GlobalSVG from '../components/GlobalSVG.svelte';
     import RayLayer from '../components/RayLayer.svelte';
     import ObjectCreationMenu from '../components/html-controls/ObjectCreationMenu.svelte';
+    import PropertiesDisplay from '../components/html-controls/PropertiesDisplay.svelte';
     import { definitions } from '../model/definitions.js'
     import { selectedApparatus } from '../stores.js'
 
@@ -24,6 +25,14 @@
         $selectedApparatus = null;
     }
 
+    $: selected = (() => {
+        let arr = apparatus.filter(o => o.properties.id == $selectedApparatus)
+        if(arr.length  > 0) {
+            return arr[0].properties
+        } else {
+            return null;
+        }
+    })()
 </script>
 
 <svelte:window on:pointermove={moved}/>
@@ -40,10 +49,11 @@
     </svg>
 
     <!--HTML Controls Layer-->
-    <div class="ui">
+    <div class="container">
         <ObjectCreationMenu on:creating={createObject}/>
-        <button on:click={deleteSelected}> Delete Selected </button>
+        <button class="ui" on:click={deleteSelected}> Del </button>
     </div>
+    <PropertiesDisplay bind:properties={selected}/>
 
 </div>
 
@@ -52,8 +62,14 @@
         background: black;
     }
 
-    .ui {
+    .container {
         position: absolute;
         color: white;
+        pointer-events: none;
+    }
+
+    .ui {
+        pointer-events: all;
+        height: 2em;
     }
 </style>
