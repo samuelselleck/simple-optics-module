@@ -50,6 +50,6 @@
     }
 
     .collapsed {
-        visibility: collapse;
+        display: none;
     }
 </style>

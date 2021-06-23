@@ -81,8 +81,8 @@ addApparatus("mirror", {
 
         let normal = unitVecFromAngle(properties.angle)
         let radius = (properties.height*properties.height/4 + properties.curve*properties.curve)/properties.curve/2
-        let center = add(properties.pos, mult(normal, properties.curve - radius))
-
+        let center = add(properties.pos, mult(normal, properties.curve - radius));
+        
         let d = ray.r;
         let f = sub(ray.p, center);
 
