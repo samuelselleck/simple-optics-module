@@ -1,11 +1,12 @@
 import { mult, sub, add, unitVecFromAngle, rotate, project,
          norm, length, crossSign, angleBetween, div, intersectionParameters,
-         decompose, angle, reflect, boundAngle} from '../utils/vectormath.js';
+         decompose, angle, reflect, boundAngle, dot} from '../utils/vectormath.js';
 
 import Lens from '../components/opticsobjects/Lens.svelte';
 import Beam from '../components/opticsobjects/Beam.svelte';
 import Mirror from '../components/opticsobjects/Mirror.svelte';
 
+import { dev } from '$app/env'
 
 export let definitions = new Map()
 export let emmiters = []
@@ -35,7 +36,8 @@ addApparatus("beam", {
         let r = unitVecFromAngle(properties.angle)
         let t = mult({x: r.y, y: -r.x}, properties.height/2)
 
-        for(let h = -1; h <= 1; h+= 10) {
+        let step = dev ? 0.1 : 0.1
+        for(let h = -1; h <= 1; h+= step) {
             let p = add(mult(t, h), properties.pos)
             rays.push({p, r})
         }
@@ -76,26 +78,54 @@ addApparatus("mirror", {
     component: Mirror,
 
     hit: function(properties, ray) {
+
         let normal = unitVecFromAngle(properties.angle)
         let radius = (properties.height*properties.height/4 + properties.curve*properties.curve)/properties.curve/2
         let center = add(properties.pos, mult(normal, properties.curve - radius))
-        let dec = decompose(center, ray.p, ray.r)
-        let lenToCenter = length(dec.normal)
-        let hitAngle = (Math.PI/2 - Math.acos(lenToCenter/radius))*crossSign(ray.r, dec.normal)
-        let hitAngleRelative =  hitAngle - angle(ray.r) + properties.angle
 
-        let threshold = Math.PI - 2*Math.atan(properties.height/2/properties.curve)
-        if(Math.abs(hitAngleRelative) < threshold) {
-            let hitPos = add(center, mult(unitVecFromAngle(angle(ray.r) - hitAngle), radius))
-            let dist = length(sub(ray.p, hitPos))
-            return {dist, refracted: () => {
-                let p = hitPos;
-                let tangent = unitVecFromAngle(-hitAngle + Math.PI/2)
+        let d = ray.r;
+        let f = sub(ray.p, center);
+
+        let a = dot(d, d);
+        let b = 2*dot(f, d);
+        let c = dot(f, f) - radius*radius;
+
+        let discriminant = b*b - 4*a*c;
+
+        if(discriminant < 0) {
+            return {dist: Infinity};
+        }
+        discriminant = Math.sqrt(discriminant);
+
+        let t1 = (-b - discriminant)/(2*a); // t1 > 0 ==> ray starts before circle
+        let t2 = (-b + discriminant)/(2*a); // t2 > 0 ==> ray is not past circle
+
+        function withinArc(p) {
+            let radVec = sub(p, center);
+            let ang = angle(radVec);
+            let aDiff = boundAngle(ang - properties.angle);
+            let arcAngle = Math.atan(properties.height/2/(radius - properties.curve));
+            return aDiff < arcAngle && aDiff > -arcAngle;
+        }
+
+        let ret = null;
+        let p1 = add(ray.p, mult(ray.r, t1));
+        let p2 = add(ray.p, mult(ray.r, t2));
+        if (t1 > 1e-6 && withinArc(p1)) {
+            ret = { p: p1, dist: t1}
+        } else if (withinArc(p2)) {
+            ret = { p: p2, dist: t2}
+        }
+
+        if (ret != null) {
+            return {dist: ret.dist, refracted: () => {
+                let tangent = rotate(sub(ret.p, center), Math.PI/2)
                 let r = reflect(ray.r, tangent)
-                return {p, r}
+                return {p: ret.p, r}
             }}
         }
-        return {dist: Infinity};
+
+        return {dist: Infinity}
     }
 
 }, () => ({height: 400, curve: 100}))

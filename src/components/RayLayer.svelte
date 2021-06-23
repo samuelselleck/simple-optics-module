@@ -2,6 +2,9 @@
     import { mult, sub, add, unitVecFromAngle, div, intersectionParameters, rotate, norm, length, crossSign, angleBetween } from '../utils/vectormath.js';
     import { definitions, emmiters, manipulators } from '../model/definitions.js'
 
+    import { dev } from '$app/env'
+
+
     export let apparatus;
 
     let update;
@@ -17,7 +20,7 @@
 
     function calculateRayPaths() {
         let path = []
-        const maxRayBounces = 2;
+        const maxRayBounces = dev ? 100 : 100;
         for(let i = 0; i < lights.length; i++) {
             let light = lights[i]
             let rays = definitions.get(light.type).rays(light.properties);
@@ -53,7 +56,7 @@
         for(let i = 0; i < objects.length; i++) {
             let o = objects[i]
             let hit = definitions.get(o.type).hit(o.properties, ray)
-            if (hit.dist < closest.dist && hit.dist > 1e-6) {
+            if (hit.dist < closest.dist && hit.dist > 1e-5) {
                 closest = hit;
             }
         }
