@@ -1,11 +1,17 @@
-import { mult, sub, add, unitVecFromAngle, rotate, project,
+import { mult, sub, add, unitVecFromAngle, rotate,
          norm, length, crossSign, angleBetween, div, intersectionParameters,
-         decompose, angle, reflect, boundAngle, dot} from '../utils/vectormath.js';
+         angle, reflect, boundAngle, dot} from '../utils/vectormath.js';
+
+import { rayLineIntersect, rayBoxIntersect, idealRefraction, snellRefraction } from './intersections.js';
 
 import Lens from '../components/opticsobjects/Lens.svelte';
 import Beam from '../components/opticsobjects/Beam.svelte';
 import Mirror from '../components/opticsobjects/Mirror.svelte';
+import ConeLight from '../components/opticsobjects/ConeLight.svelte';
+import Wall from '../components/opticsobjects/Wall.svelte'
+import RectangleLens from '../components/opticsobjects/RectangleLens.svelte'
 
+import { idealMode } from '../stores.js';
 import { dev } from '$app/env'
 
 export let definitions = new Map()
@@ -46,86 +52,67 @@ addApparatus("beam", {
 
 }, () => ({height: 250}))
 
+addApparatus("cone light", {
+    component: ConeLight,
+
+    rays: function(properties) {
+        let rays = []
+        let n = unitVecFromAngle(properties.angle)
+
+        let maxAngle = Math.atan(properties.height/properties.length/2)
+        let step = maxAngle/5 - 0.0001
+        for(let a = -maxAngle; a <= maxAngle; a+= step) {
+            let p = add(mult(n, -properties.length), properties.pos)
+            let r = rotate(n, a)
+            rays.push({p, r})
+        }
+        return rays;
+    }
+
+}, () => ({height: 250, length: 100}))
+
 addApparatus("lens", {
     component: Lens,
     hit: function(properties, ray) {
-        let segment = mult(unitVecFromAngle(properties.angle + Math.PI/2), properties.height)
-        let origin = sub(properties.pos, div(segment, 2))
-        let params = intersectionParameters(ray.p, ray.r, origin, segment)
-
-        if (params) {
-            if(params.s >= 0&& params.s <= 1) {
-                return {dist: params.t, refracted: () => {
-                    let cross = crossSign(segment, ray.r)
-                    let normal = norm(rotate(segment, cross*Math.PI/2))
-                    let angleIn = angleBetween(ray.r, normal);
-                    
-                    let p = add(ray.p, mult(ray.r, params.t));
-                    let distVec = sub(properties.pos, p);
-                    let dist = length(distVec)*crossSign(distVec, ray.r);
-                    let angleOut = Math.atan(Math.tan(angleIn) - dist/properties.focal);
-                    let r = rotate(normal, angleOut);
-                    return {p, r}
-                }}
-            }
+        let intersectionData = rayLineIntersect(ray, properties.pos, properties.angle, properties.height)
+        return {
+            dist: intersectionData.dist,
+            refracted: () => idealRefraction(intersectionData, properties.focal, false, false)
         }
-        return {dist: Infinity};
     }
-
 }, () => ({height: 300, focal: 500}))
+
+addApparatus("rectangle lens", {
+    component: RectangleLens,
+    hit: function(properties, ray) {
+        let intersectionData = rayBoxIntersect(ray, properties.pos, properties.angle, properties.height, properties.width)
+        return {
+            dist: intersectionData.dist,
+            refracted: () => snellRefraction(intersectionData, properties.n)
+        }
+    }
+}, () => ({height: 300, width: 30, n: 1.5}))
+
+addApparatus("wall", {
+    component: Wall,
+    hit: function(properties, ray) {
+        let intersectionData = rayBoxIntersect(ray, properties.pos, properties.angle, properties.height, properties.width)
+        return {
+            dist: intersectionData.dist,
+            refracted: () => ({p: add(ray.p, mult(ray.r, intersectionData.dist))})
+        }
+    }
+}, () => ({height: 300, width: 30}))
+
 
 addApparatus("mirror", {
     component: Mirror,
-
     hit: function(properties, ray) {
 
-        let normal = unitVecFromAngle(properties.angle)
-        let radius = (properties.height*properties.height/4 + properties.curve*properties.curve)/properties.curve/2
-        let center = add(properties.pos, mult(normal, properties.curve - radius));
-        
-        let d = ray.r;
-        let f = sub(ray.p, center);
-
-        let a = dot(d, d);
-        let b = 2*dot(f, d);
-        let c = dot(f, f) - radius*radius;
-
-        let discriminant = b*b - 4*a*c;
-
-        if(discriminant < 0) {
-            return {dist: Infinity};
+        let intersectionData = rayLineIntersect(ray, properties.pos, properties.angle, properties.height)
+        return {
+            dist: intersectionData.dist,
+            refracted: () => idealRefraction(intersectionData, properties.curve, true, true)
         }
-        discriminant = Math.sqrt(discriminant);
-
-        let t1 = (-b - discriminant)/(2*a); // t1 > 0 ==> ray starts before circle
-        let t2 = (-b + discriminant)/(2*a); // t2 > 0 ==> ray is not past circle
-
-        function withinArc(p) {
-            let radVec = sub(p, center);
-            let ang = angle(radVec);
-            let aDiff = boundAngle(ang - properties.angle);
-            let arcAngle = Math.atan(properties.height/2/(radius - properties.curve));
-            return aDiff < arcAngle && aDiff > -arcAngle;
-        }
-
-        let ret = null;
-        let p1 = add(ray.p, mult(ray.r, t1));
-        let p2 = add(ray.p, mult(ray.r, t2));
-        if (t1 > 1e-6 && withinArc(p1)) {
-            ret = { p: p1, dist: t1}
-        } else if (withinArc(p2)) {
-            ret = { p: p2, dist: t2}
-        }
-
-        if (ret != null) {
-            return {dist: ret.dist, refracted: () => {
-                let tangent = rotate(sub(ret.p, center), Math.PI/2)
-                let r = reflect(ray.r, tangent)
-                return {p: ret.p, r}
-            }}
-        }
-
-        return {dist: Infinity}
-    }
-
+    },
 }, () => ({height: 400, curve: 100}))

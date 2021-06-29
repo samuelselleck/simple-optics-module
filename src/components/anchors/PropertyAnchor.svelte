@@ -1,55 +1,35 @@
 <script>
-    import { toLocalCoords} from '../../stores.js'
-    import { length } from '../../utils/vectormath.js';
+    import { sub, add } from "../../utils/vectormath";
+    import CallbackAnchor from "./CallbackAnchor.svelte";
 
-    export let property;
+
+    export let property = {x: 0, y: 0}
     export let behaviour = p => p;
-    export let forwardEval = p => length(p);
-    export let backEval = v => ({x: v, y: 0});
-    export let svgIcon = "anchor-marker";
-    export let transform = "";
+    export let forwardEval = p => p;
+    export let backEval = v => v;
 
-    /*Don't change the below statement to a normal reactive statement
-      This fixes a bug where property anchors don't update properly when others changing the same property do 
-      (changes reactive statement update order)*/
     let pos;
-    $: {pos = backEval(property); pos;};
+    let anchor;
+
+    $: pos = backEval(property), pos;
+
+    function start(newpos) {
+        anchor = sub(pos, newpos)
+    }
+
+    function changed(newpos) {
+        pos = behaviour(add(newpos, anchor))
+        property = forwardEval(pos)
+    }
 
     let marker;
-    let moving = false;
-
-    function down(event) {
-        moving = true;
-    }
-
-    function moved(event) {
-        if(moving) {
-            let move = $toLocalCoords(marker, {x: event.clientX, y: event.clientY})
-            pos = behaviour(move)
-            property = forwardEval(pos)
-        }
-    }
-
-    function up(event) {
-        moving = false;
-    }
 
 </script>
 
-<svelte:window on:pointermove={moved} on:pointerup={up}/>
-
-<g class:collapsed={false} bind:this={marker} on:pointerdown={down}>
-    <g class:movable={!moving} transform="translate({pos.x}, {pos.y})">
-    <use {transform} xlink:href="#{svgIcon}"/>
+<CallbackAnchor bind:pos relativeToObject={marker} {changed} {start}>
+    <g bind:this={marker}>
+        <g transform="translate({pos.x}, {pos.y})">
+            <slot/>
+        </g>
     </g>
-</g>
-
-<style>
-    .collapsed {
-        visibility: collapse;
-    }
-
-    .movable {
-        cursor: move;
-    }
-</style>
+</CallbackAnchor>

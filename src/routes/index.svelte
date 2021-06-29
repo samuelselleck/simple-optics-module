@@ -42,10 +42,10 @@
     <!--SVG Layer-->
     <svg class="canvas fill" bind:this={$svgCanvas} xmlns="http://www.w3.org/2000/svg">
         <GlobalSVG/>
+        <RayLayer {apparatus}/>
         {#each apparatus as o}
             <svelte:component this={definitions.get(o.type).component} properties={o.properties}/>
         {/each}
-        <RayLayer {apparatus}/>
     </svg>
 
     <!--HTML Controls Layer-->

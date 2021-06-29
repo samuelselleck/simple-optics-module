@@ -35,12 +35,15 @@
                     if(hit != null) {
                         ray = hit;
                         path.push(`L ${ray.p.x}, ${ray.p.y}`)
+                        if(ray.r == undefined) {
+                            break;
+                        }
                     } else {
                         break;
                     }
                 }
 
-                if(j < maxRayBounces) {
+                if(j < maxRayBounces && ray.r != undefined) {
                     path.push(`l ${ray.r.x*10000}, ${ray.r.y*10000}`)
                 }
             }

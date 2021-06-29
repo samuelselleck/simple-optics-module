@@ -14,4 +14,6 @@
     behaviour={p => project(p, dir)}
     forwardEval={p => dot(p, dir)/scale}
     backEval={v => mult(dir, v*scale)}
-/>
+>  
+    <use xlink:href="#anchor-marker"/>
+</PropertyAnchor>
