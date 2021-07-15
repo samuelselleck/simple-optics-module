@@ -45,7 +45,7 @@
                 }
 
                 if(j < maxRayBounces && ray.r != undefined) {
-                    path.push(`l ${ray.r.x*10000}, ${ray.r.y*10000}`)
+                    path.push(`l ${ray.r.x*1000000}, ${ray.r.y*1000000}`)
                 }
             }
         }

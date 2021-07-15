@@ -38,12 +38,8 @@
 
     onMount(() => {
         panzoom($zoomgroup, {
-            beforeMouseDown: function(e) {
-                // allow mouse-down panning only if altKey is down. Otherwise - ignore
-                var shouldIgnore = !(e.altKey || e.button == 1);
-                console.log(e.button)
-                return shouldIgnore;
-            }
+            maxZoom: 2,
+            minZoom: 0.5,
         });
     })
 </script>
@@ -86,7 +82,8 @@
     }
 
     .container {
-        position: absolute;
+        position: relative;
+        height: 100%;
         color: white;
         pointer-events: none;
     }

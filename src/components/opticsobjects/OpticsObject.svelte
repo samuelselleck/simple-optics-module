@@ -35,7 +35,7 @@
 
 <g transform={translation}>
     <g transform={rotation}>
-        <g class:movable={!moving} on:pointerdown={down} >
+        <g class:movable={!moving} on:pointerdown|preventDefault={down} >
             <slot name="object"/>
         </g>
         <g class:collapsed={!selected}>

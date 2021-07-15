@@ -21,8 +21,11 @@
 <style>
     .container {
         pointer-events: none;
+        height: 100%;
+        width: min-content;
         display: flex;
-        flex-wrap: nowrap;
+        justify-content: flex-start;
+        flex-wrap: wrap;
         flex-direction: column;
     }
 </style>
