@@ -3,6 +3,7 @@
     import { definitions, emmiters, manipulators } from '../model/definitions.js'
 
     import { dev } from '$app/env'
+    import { snapToCenterline } from '../stores.js';
 
 
     export let apparatus;
@@ -14,7 +15,7 @@
 
     $: lights = apparatus.filter(o => emmiters.includes(o.type));
     $: objects = apparatus.filter(o => manipulators.includes(o.type));
-    $: apparatus, calculateRayPaths();
+    $: apparatus, $snapToCenterline, calculateRayPaths();
 
     let pathString = "";
 

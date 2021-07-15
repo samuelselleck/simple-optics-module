@@ -23,7 +23,7 @@ export function rayBoxIntersect(ray, origin, angle, height, width) {
         let a = i*Math.PI/2;
         let o = add(origin, mult(unitVecFromAngle(a + angle), (i % 2 == 1 ? height : width)/2))
         let intersectionData = rayLineIntersect(ray, o, a + angle,  i % 2 == 0 ? height : width)
-        if(intersectionData.dist < closestIntersectionData.dist) {
+        if(intersectionData.dist > 1e-6 && intersectionData.dist < closestIntersectionData.dist) {
             closestIntersectionData = intersectionData;
         }
     }
@@ -48,17 +48,23 @@ export function idealRefraction(intersectionData, focal, reflect, oneSided) {
 }
 
 export function snellRefraction(intersectionData, n) {
+
     let cross = crossSign(intersectionData.segment, intersectionData.ray.r)
     let normal = norm(rotate(intersectionData.segment, cross*Math.PI/2))
     let angleIn = angleBetween(intersectionData.ray.r, normal);
-    let inner = (cross > 0 ? n : 1/n)*Math.sin(angleIn)
+    
     let angleOut;
-    if (inner > -Math.PI/2 && inner < Math.PI/2) {
-        angleOut = Math.asin(inner)
+
+    if (cross > 0) {
+        angleOut = Math.asin(1.0/n*Math.sin(angleIn))
+    } else if (Math.abs(angleIn) <= Math.asin(1.0/n)) {
+        angleOut = Math.asin(n*Math.sin(angleIn))
     } else {
         angleOut = Math.PI - angleIn;
     }
+
     let r = rotate(normal, angleOut)
     let p = add(intersectionData.ray.p, mult(intersectionData.ray.r, intersectionData.dist));
-    return {r, p}
+    return {p, r}
 }
+

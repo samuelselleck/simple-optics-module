@@ -69,7 +69,7 @@ addApparatus("cone light", {
         return rays;
     }
 
-}, () => ({height: 250, length: 100}))
+}, () => ({height: 50, length: 100}))
 
 addApparatus("lens", {
     component: Lens,

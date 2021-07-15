@@ -14,3 +14,4 @@ export const toLocalCoords = derived(svgCanvas, $svgCanvas => {
 
 export const selectedApparatus = writable(null)
 export const idealMode = writable(true) //Ideal Lenses and Mirrors
+export const snapToCenterline = writable(true)

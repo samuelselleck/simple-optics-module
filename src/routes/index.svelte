@@ -5,7 +5,7 @@
     import ObjectCreationMenu from '../components/html-controls/ObjectCreationMenu.svelte';
     import PropertiesDisplay from '../components/html-controls/PropertiesDisplay.svelte';
     import { definitions } from '../model/definitions.js'
-    import { selectedApparatus } from '../stores.js'
+    import { selectedApparatus, snapToCenterline } from '../stores.js'
 
     let apparatus = []
 
@@ -40,8 +40,11 @@
 <div class="fill">
 
     <!--SVG Layer-->
-    <svg class="canvas fill" bind:this={$svgCanvas} xmlns="http://www.w3.org/2000/svg">
+    <svg class="canvas fill" viewBox="0 -540 1900 1000" bind:this={$svgCanvas} xmlns="http://www.w3.org/2000/svg">
         <GlobalSVG/>
+        {#if $snapToCenterline}
+            <line class="center-line" x1="0" y1="0" x2="1900" y2="0"/>
+        {/if}
         <RayLayer {apparatus}/>
         {#each apparatus as o}
             <svelte:component this={definitions.get(o.type).component} properties={o.properties}/>
@@ -54,7 +57,12 @@
         <button class="ui" on:click={deleteSelected}> Del </button>
     </div>
     <PropertiesDisplay bind:properties={selected}/>
-
+    <div class="options">
+        <label>
+            <input type="checkbox" bind:checked={$snapToCenterline}/>
+            Snap Objects To Center
+        </label>
+    </div>
 </div>
 
 <style>
@@ -71,5 +79,19 @@
     .ui {
         pointer-events: all;
         height: 2em;
+    }
+
+    .options {
+        position:absolute;
+        color: white;
+        bottom: 0;
+        right: 0;
+    }
+
+    .center-line {
+        stroke: white;
+        stroke-width: 1;
+        stroke-dasharray: 5, 15;
+        opacity: 0.2;
     }
 </style>
