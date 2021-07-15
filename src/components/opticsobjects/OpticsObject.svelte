@@ -1,6 +1,6 @@
 <script>
     import { toDegrees } from '../../utils/vectormath.js'
-    import { selectedApparatus, snapToCenterline } from '../../stores.js'
+    import { selectedApparatus, snapToCenterline, toLocalCoords, svgCanvas, zoomgroup } from '../../stores.js'
     export let properties;
 
     let moving = false;
@@ -8,14 +8,16 @@
 
     function down(event) {
         moving = true;
-        anchor = {x: properties.pos.x - event.clientX, y: properties.pos.y - event.clientY}
+        let pos = $toLocalCoords($zoomgroup, {x: event.clientX, y: event.clientY})
+        anchor = {x: properties.pos.x - pos.x, y: properties.pos.y - pos.y}
         $selectedApparatus = properties.id;
     }
 
     function moved(event) {
         if(moving) {
-            properties.pos.x = event.clientX + anchor.x;
-            properties.pos.y = $snapToCenterline ? 0 : event.clientY + anchor.y;
+            let pos = $toLocalCoords($zoomgroup, {x: event.clientX, y: event.clientY})
+            properties.pos.x = pos.x + anchor.x;
+            properties.pos.y = $snapToCenterline ? 0 : pos.y + anchor.y;
         }
     }
 

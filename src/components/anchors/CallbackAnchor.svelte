@@ -1,11 +1,11 @@
 <script>
-    import { toLocalCoords, svgCanvas} from '../../stores.js'
+    import { toLocalCoords, svgCanvas, zoomgroup} from '../../stores.js'
 
     export let start = undefined;
     export let changed;
     export let stop = undefined;
     export let pos = {x: 0, y: 0};
-    export let relativeToObject = $svgCanvas;
+    export let relativeToObject = $zoomgroup;
 
     function down(event) {
         moving = true;

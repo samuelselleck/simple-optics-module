@@ -2,6 +2,7 @@ import { derived, writable } from 'svelte/store';
 
 
 export const svgCanvas = writable(null);
+export const zoomgroup = writable(null);
 export const toLocalCoords = derived(svgCanvas, $svgCanvas => {
 
     return (el, pos) => {

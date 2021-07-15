@@ -1,11 +1,13 @@
 <script>
-    import { svgCanvas } from '../stores.js';
+    import { svgCanvas, zoomgroup } from '../stores.js';
     import GlobalSVG from '../components/GlobalSVG.svelte';
     import RayLayer from '../components/RayLayer.svelte';
     import ObjectCreationMenu from '../components/html-controls/ObjectCreationMenu.svelte';
     import PropertiesDisplay from '../components/html-controls/PropertiesDisplay.svelte';
     import { definitions } from '../model/definitions.js'
     import { selectedApparatus, snapToCenterline } from '../stores.js'
+    import panzoom from 'panzoom';
+    import { onMount } from 'svelte';
 
     let apparatus = []
 
@@ -33,6 +35,17 @@
             return null;
         }
     })()
+
+    onMount(() => {
+        panzoom($zoomgroup, {
+            beforeMouseDown: function(e) {
+                // allow mouse-down panning only if altKey is down. Otherwise - ignore
+                var shouldIgnore = !(e.altKey || e.button == 1);
+                console.log(e.button)
+                return shouldIgnore;
+            }
+        });
+    })
 </script>
 
 <svelte:window on:pointermove={moved}/>
@@ -41,14 +54,16 @@
 
     <!--SVG Layer-->
     <svg class="canvas fill" viewBox="0 -540 1900 1000" bind:this={$svgCanvas} xmlns="http://www.w3.org/2000/svg">
-        <GlobalSVG/>
-        {#if $snapToCenterline}
-            <line class="center-line" x1="0" y1="0" x2="1900" y2="0"/>
-        {/if}
-        <RayLayer {apparatus}/>
-        {#each apparatus as o}
-            <svelte:component this={definitions.get(o.type).component} properties={o.properties}/>
-        {/each}
+        <g bind:this={$zoomgroup}>
+            <GlobalSVG/>
+            {#if $snapToCenterline}
+                <line class="center-line" x1="-10000000" y1="0" x2="10000000" y2="0"/>
+            {/if}
+            <RayLayer {apparatus}/>
+            {#each apparatus as o}
+                <svelte:component this={definitions.get(o.type).component} properties={o.properties}/>
+            {/each}
+        </g>
     </svg>
 
     <!--HTML Controls Layer-->
