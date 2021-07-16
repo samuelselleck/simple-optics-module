@@ -35,7 +35,7 @@
 
 <svelte:window on:pointermove={moved} on:pointerup={up}/>
 
-<g class:movable={!moving} on:pointerdown|preventDefault={down}>
+<g class:movable={!moving} on:pointerdown|stopPropagation={down}>
         <slot/>
 </g>
 

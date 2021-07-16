@@ -6,10 +6,11 @@
     import PropertiesDisplay from '../components/html-controls/PropertiesDisplay.svelte';
     import { definitions } from '../model/definitions.js'
     import { selectedApparatus, snapToCenterline } from '../stores.js'
-    import panzoom from 'panzoom';
+    import Panzoom from '@panzoom/panzoom';
     import { onMount } from 'svelte';
 
     let apparatus = []
+    let panzoom;
 
     function createObject(event) {
         let pos = $toLocalCoords($zoomgroup, {x: window.innerWidth/2, y: window.innerHeight/2})
@@ -32,17 +33,25 @@
     })()
 
     onMount(() => {
-        panzoom($zoomgroup, {
-            maxZoom: 2,
-            minZoom: 0.5,
+        panzoom = Panzoom($zoomgroup, {
+            cursor: "default",
+            canvas: true,
+            maxScale: 2,
+            minScale: 0.5,
         });
     })
+
+    function zoom(event) {
+        panzoom.zoomWithWheel(event, {
+            //focal: pos,
+        })
+    }
 </script>
 
 <div class="fill">
 
     <!--SVG Layer-->
-    <svg class="canvas fill" viewBox="0 -540 1900 1000" bind:this={$svgCanvas} xmlns="http://www.w3.org/2000/svg">
+    <svg class="canvas fill" viewBox="0 -540 1900 1000" on:mousewheel={zoom} bind:this={$svgCanvas} xmlns="http://www.w3.org/2000/svg">
         <g bind:this={$zoomgroup}>
             <GlobalSVG/>
             {#if $snapToCenterline}
