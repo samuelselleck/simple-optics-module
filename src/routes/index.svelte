@@ -51,7 +51,7 @@
 <div class="fill">
 
     <!--SVG Layer-->
-    <svg class="canvas fill" viewBox="0 -540 1900 1000" on:mousewheel={zoom} bind:this={$svgCanvas} xmlns="http://www.w3.org/2000/svg">
+    <svg class="canvas fill" on:mousewheel={zoom} bind:this={$svgCanvas} xmlns="http://www.w3.org/2000/svg">
         <g bind:this={$zoomgroup}>
             <GlobalSVG/>
             {#if $snapToCenterline}
