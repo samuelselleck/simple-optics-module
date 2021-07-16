@@ -2,7 +2,7 @@ import { mult, sub, add, unitVecFromAngle, rotate,
          norm, length, crossSign, angleBetween, div, intersectionParameters,
          angle, reflect, boundAngle, dot} from '../utils/vectormath.js';
 
-import { rayLineIntersect, rayBoxIntersect, idealRefraction, snellRefraction } from './intersections.js';
+import { rayLineIntersect, rayBoxIntersect, idealRefraction, snellRefraction, rayPrismIntesect } from './intersections.js';
 
 import Lens from '../components/opticsobjects/Lens.svelte';
 import Beam from '../components/opticsobjects/Beam.svelte';
@@ -10,7 +10,7 @@ import Mirror from '../components/opticsobjects/Mirror.svelte';
 import ConeLight from '../components/opticsobjects/ConeLight.svelte';
 import Wall from '../components/opticsobjects/Wall.svelte'
 import RectangleLens from '../components/opticsobjects/RectangleLens.svelte'
-
+import Prism from '../components/opticsobjects/Prism.svelte'
 import { idealMode } from '../stores.js';
 import { dev } from '$app/env'
 
@@ -21,7 +21,7 @@ export let manipulators = []
 let idCounter = 0;
 
 function addApparatus(type, definition, create) {
-    definition.build = pos => ({type, properties: Object.assign(create(), {type, pos, angle: 0, id: idCounter++})})
+    definition.build = pos => ({type, properties: {...create(), pos, angle: 0, id: idCounter++}});
     definitions.set(type, definition)
 
     //Any object with the rays property in some way emmits light
@@ -92,6 +92,17 @@ addApparatus("rectangle lens", {
         }
     }
 }, () => ({height: 300, width: 30, n: 1.5}))
+
+addApparatus("prism", {
+    component: Prism,
+    hit: function(properties, ray) {
+        let intersectionData = rayPrismIntesect(ray, properties.pos, properties.angle, properties.radius, properties.sides)
+        return {
+            dist: intersectionData.dist,
+            refracted: () => snellRefraction(intersectionData, properties.n)
+        }
+    }
+}, () => ({radius: 100, sides: 3, n: 1.5}))
 
 addApparatus("wall", {
     component: Wall,

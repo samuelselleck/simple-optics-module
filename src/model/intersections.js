@@ -30,6 +30,20 @@ export function rayBoxIntersect(ray, origin, angle, height, width) {
     return closestIntersectionData;
 }
 
+export function rayPrismIntesect(ray, origin, angle, orthogonalDistance, sides) {
+    let closestIntersectionData = {dist: Infinity}
+    let segmentLength = Math.tan(2*Math.PI/sides/2)*2*orthogonalDistance;
+    for(let i = 0; i < sides; i++) {
+        let a = i*2*Math.PI/sides;
+        let o = add(origin, mult(unitVecFromAngle(a + angle), orthogonalDistance))
+        let intersectionData = rayLineIntersect(ray, o, a + angle,  segmentLength)
+        if(intersectionData.dist > 1e-6 && intersectionData.dist < closestIntersectionData.dist) {
+            closestIntersectionData = intersectionData;
+        }
+    }
+    return closestIntersectionData;
+}
+
 export function idealRefraction(intersectionData, focal, reflect, oneSided) {
 
     let cross = crossSign(intersectionData.segment, intersectionData.ray.r)
