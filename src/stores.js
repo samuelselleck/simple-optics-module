@@ -9,7 +9,8 @@ export const toLocalCoords = derived(svgCanvas, $svgCanvas => {
         let point = $svgCanvas.createSVGPoint();
         point.x = pos.x
         point.y = pos.y
-        return point.matrixTransform(el.getScreenCTM().inverse())
+        let svgPoint = point.matrixTransform(el.getScreenCTM().inverse())
+        return {x: svgPoint.x, y: svgPoint.y}
     }
 })
 

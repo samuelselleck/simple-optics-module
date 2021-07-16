@@ -11,19 +11,17 @@ import PropertyAnchor from "../anchors/PropertyAnchor.svelte";
 
 {#if properties}
 <div>
-    {#key properties}
-        {#each Object.keys(properties) as property}
-            {#if !hidden.includes(property)}
-                <span>{property}:</span> 
-                {#if properties[property].hasOwnProperty('x') && properties[property].hasOwnProperty('x')}
-                    <input value={properties[property].x} disabled>
-                    <input value={properties[property].y} disabled>
-                {:else}
-                    <input value={properties[property]} disabled>
-                {/if}
+    {#each Object.keys(properties) as property}
+        {#if !hidden.includes(property)}
+            <span>{property}:</span> 
+            {#if properties[property] && properties[property].hasOwnProperty('x') && properties[property].hasOwnProperty('y')}
+                <input type=number bind:value={properties[property].x}/>
+                <input type=number bind:value={properties[property].y}/>
+            {:else}
+                <input type=number bind:value={properties[property]}/>
             {/if}
-        {/each}
-    {/key}
+        {/if}
+    {/each}
 </div>
 {/if}
 
@@ -31,18 +29,23 @@ import PropertyAnchor from "../anchors/PropertyAnchor.svelte";
 <svelte:window on:pointermove={update}/>
 
 <style>
-    div {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        color: white;
-    }
 
     input {
-        background-color: var(--main-gray);
-        width: 3em;
+        background-color: black;
+        width: 5em;
         border: none;
         color: white;
         margin: 5px;
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+    -moz-appearance: textfield;
     }
 </style>

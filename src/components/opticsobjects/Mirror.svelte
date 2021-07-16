@@ -35,10 +35,10 @@
 </script>
 
 <OpticsObject {properties}>
-    <g slot="object">
+    <svelte:fragment slot="object">
         <path fill="url(#mirror)" d={path()}/>
-    </g>
-    <g slot="local">
+    </svelte:fragment>
+    <svelte:fragment slot="local">
         <!--Height-->
         <TranslationAnchor bind:property={properties.height} dir={{x: 0, y: 1}} scale=0.5/>
         <TranslationAnchor bind:property={properties.height} dir={{x: 0, y: -1}} scale=0.5/>
@@ -47,9 +47,9 @@
         {#if $idealMode}
             <TranslationAnchor bind:property={properties.curve} dir={{x: -1, y: 0}}/>
         {/if}
-    </g>
-    <g slot="global">
+    </svelte:fragment>
+    <svelte:fragment slot="global">
         <RotationAnchor bind:property={properties.angle} distance={properties.height/2 + 30}/>
         <RotationAnchor bind:property={properties.angle} start={Math.PI} distance={properties.height/2 + 30}/>
-    </g>
+    </svelte:fragment>
 </OpticsObject>

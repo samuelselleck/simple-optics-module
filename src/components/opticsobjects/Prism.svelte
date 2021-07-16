@@ -20,16 +20,16 @@ import { unitVecFromAngle, mult, rotate } from "../../utils/vectormath";
 </script>
 
 <OpticsObject {properties}>
-    <g slot="object">
+    <svelte:fragment slot="object">
         <polygon fill="url(#glass)" {points}/>
-    </g>
-    <g slot="local">
+    </svelte:fragment>
+    <svelte:fragment slot="local">
         <TranslationAnchor bind:property={properties.radius} dir={{x: 1, y: 0}}/>
-    </g>
-    <g slot="global">
+    </svelte:fragment>
+    <svelte:fragment slot="global">
         <!--Rotation-->
         <RotationAnchor bind:property={properties.angle} start={Math.PI} distance={properties.radius + 100}/>
-    </g>
+    </svelte:fragment>
 </OpticsObject>
 
 <style>

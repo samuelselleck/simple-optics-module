@@ -1,5 +1,5 @@
 <script>
-    import { svgCanvas, zoomgroup } from '../stores.js';
+    import { svgCanvas, zoomgroup, toLocalCoords } from '../stores.js';
     import GlobalSVG from '../components/GlobalSVG.svelte';
     import RayLayer from '../components/RayLayer.svelte';
     import ObjectCreationMenu from '../components/html-controls/ObjectCreationMenu.svelte';
@@ -11,15 +11,10 @@
 
     let apparatus = []
 
-    let mousePos = {x: 0, y: 0}
-
-    function moved(event) {
-        mousePos.x = event.clientX;
-        mousePos.y = event.clientY;
-    }
-
     function createObject(event) {
-        apparatus = [...apparatus, definitions.get(event.detail.type).build({x: 200, y: 200})]
+        let pos = $toLocalCoords($zoomgroup, {x: window.innerWidth/2, y: window.innerHeight/2})
+        console.log(pos)
+        apparatus = [...apparatus, definitions.get(event.detail.type).build(pos)]
     }
 
     function deleteSelected() {
@@ -44,8 +39,6 @@
     })
 </script>
 
-<svelte:window on:pointermove={moved}/>
-
 <div class="fill">
 
     <!--SVG Layer-->
@@ -63,42 +56,54 @@
     </svg>
 
     <!--HTML Controls Layer-->
-    <div class="container">
-        <ObjectCreationMenu on:creating={createObject}/>
-        <button class="ui" on:click={deleteSelected}> Del </button>
-    </div>
-    <PropertiesDisplay bind:properties={selected}/>
-    <div class="options">
-        <label>
-            <input type="checkbox" bind:checked={$snapToCenterline}/>
-            Snap Objects To Center
-        </label>
+    <div class="ui-layer">
+        <div class="sidebar">
+            <ObjectCreationMenu on:creating={createObject}/>
+            <button on:click={deleteSelected}> Del </button>
+        </div>
+        <div class="bottom">
+            <PropertiesDisplay bind:properties={selected}/>
+            <label class="right">
+                Snap Objects To Center
+                <input type="checkbox" bind:checked={$snapToCenterline}/>
+            </label>
+        </div>
     </div>
 </div>
 
 <style>
+    .ui-layer {
+        position: relative;
+        z-index: 100;
+        height: 100%;
+        width: 100%;
+        pointer-events: none;
+        color: white;
+    }
     .canvas {
         background: black;
     }
 
-    .container {
-        position: relative;
-        height: 100%;
-        color: white;
-        pointer-events: none;
-    }
-
-    .ui {
+    .sidebar {
+        width: fit-content;
         pointer-events: all;
-        height: 2em;
     }
 
-    .options {
-        position:absolute;
-        color: white;
-        bottom: 0;
-        right: 0;
+    .right {
+        margin-left: auto
     }
+    .bottom {
+        align-items:  right;
+        background: var(--main-gray);
+        display: flex;
+        justify-content: space-between;
+        width:100%;
+        text-align: right;
+        pointer-events: all;
+        position: absolute;
+        bottom: 0;
+    }
+
 
     .center-line {
         stroke: white;

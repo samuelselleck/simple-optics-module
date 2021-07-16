@@ -33,22 +33,22 @@
 </script>
 
 <OpticsObject {properties}>
-    <g slot="object">
+    <svelte:fragment slot="object">
         <path d={path()} fill="url(#glass)"/>
         <line class="refraction-line" x1="0" y1={properties.height/2} x2="0" y2={-properties.height/2}/>
-    </g>
-    <g slot="local">
+    </svelte:fragment>
+    <svelte:fragment slot="local">
         <!--Focal Length-->
         <TranslationAnchor bind:property={properties.focal} dir={{x: 1, y: 0}}/>
         <TranslationAnchor bind:property={properties.focal} dir={{x: -1, y: 0}}/>
         <!--Height-->
         <TranslationAnchor bind:property={properties.height} dir={{x: 0, y: 1}} scale=0.5/>
         <TranslationAnchor bind:property={properties.height} dir={{x: 0, y: -1}} scale=0.5/>
-    </g>
-    <g slot="global">
+    </svelte:fragment>
+    <svelte:fragment slot="global">
         <RotationAnchor bind:property={properties.angle} distance={properties.height/2 + 30}/>
         <RotationAnchor bind:property={properties.angle} start={Math.PI} distance={properties.height/2 + 30}/>
-    </g>
+    </svelte:fragment>
 </OpticsObject>
 
 <style>

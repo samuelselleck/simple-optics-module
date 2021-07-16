@@ -1,6 +1,7 @@
 <script>
     import { toDegrees } from '../../utils/vectormath.js'
     import { selectedApparatus, snapToCenterline, toLocalCoords, svgCanvas, zoomgroup } from '../../stores.js'
+
     export let properties;
 
     let moving = false;
