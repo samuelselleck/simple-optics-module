@@ -49,8 +49,15 @@ export function idealRefraction(intersectionData, focal, reflect, oneSided) {
     let cross = crossSign(intersectionData.segment, intersectionData.ray.r)
     let normal = norm(rotate(intersectionData.segment, cross*Math.PI/2))
     let angleIn = angleBetween(intersectionData.ray.r, normal);
-            
     let p = add(intersectionData.ray.p, mult(intersectionData.ray.r, intersectionData.dist));
+
+    //Normal flat mirror (not very intuitive, but usefull)
+    if (focal == 0 && oneSided) {
+        let angleOut = Math.PI - angleIn
+        let r = rotate(normal, angleOut)
+        return {p, r}
+    }
+            
     if(cross > 0 && oneSided) {
         return {p}
     }

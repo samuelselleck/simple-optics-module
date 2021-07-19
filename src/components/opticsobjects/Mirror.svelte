@@ -6,11 +6,19 @@
 
     export let properties;
     $: h = properties.height
+    let w = 8;
 
     $: path = () => {
         if($idealMode) {
             let r = -properties.curve
-            if(r > 0) { //Convex
+            if (r == 0) {
+                return`
+                    M${-w/2},${-h/2}
+                    h${w}
+                    v${h}
+                    h${-w}
+                    z`
+            } else if (r > 0) { //Convex
                 r = Math.max(-properties.curve*4, h)
                 return`
                     M0,${-h/2}
@@ -32,6 +40,10 @@
             return `M0,${h/2} a${r},${r} 0 0,${r < 0 | 0} 0,-${h}`
         }
     }
+
+    function lockToCenter(v) {
+        return Math.abs(v) < properties.height/20 ? 0 : v;
+    }
 </script>
 
 <OpticsObject {properties}>
@@ -43,9 +55,9 @@
         <TranslationAnchor bind:property={properties.height} dir={{x: 0, y: 1}} scale=0.5/>
         <TranslationAnchor bind:property={properties.height} dir={{x: 0, y: -1}} scale=0.5/>
         <!--Curve-->
-        <TranslationAnchor bind:property={properties.curve} dir={{x: 1, y: 0}}/>
+        <TranslationAnchor bind:property={properties.curve} dir={{x: 1, y: 0}} forwardEvalOverride={lockToCenter}/>
         {#if $idealMode}
-            <TranslationAnchor bind:property={properties.curve} dir={{x: -1, y: 0}}/>
+            <TranslationAnchor bind:property={properties.curve} dir={{x: -1, y: 0}} forwardEvalOverride={lockToCenter}/>
         {/if}
     </svelte:fragment>
     <svelte:fragment slot="global">

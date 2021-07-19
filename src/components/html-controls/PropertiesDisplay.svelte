@@ -7,6 +7,8 @@ import PropertyAnchor from "../anchors/PropertyAnchor.svelte";
         properties = properties;
     }
     const hidden = ["type", "id"]
+
+    let format = v => v.toFixed(2)
 </script>
 
 {#if properties}
@@ -15,10 +17,10 @@ import PropertyAnchor from "../anchors/PropertyAnchor.svelte";
         {#if !hidden.includes(property)}
             <span>{property}:</span> 
             {#if properties[property] && properties[property].hasOwnProperty('x') && properties[property].hasOwnProperty('y')}
-                <input type=number bind:value={properties[property].x}/>
-                <input type=number bind:value={properties[property].y}/>
+                <input type=number value={format(properties[property].x)} on:change={e =>  properties[property].x = parseFloat(e.target.value)}/>
+                <input type=number value={format(properties[property].y)} on:change={e =>  properties[property].y = parseFloat(e.target.value)}/>
             {:else}
-                <input type=number bind:value={properties[property]}/>
+                <input type=number value={format(properties[property])} on:change={e =>  properties[property] = parseFloat(e.target.value)}/>
             {/if}
         {/if}
     {/each}

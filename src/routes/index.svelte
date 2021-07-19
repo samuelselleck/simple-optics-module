@@ -38,6 +38,7 @@
             canvas: true,
             maxScale: 2,
             minScale: 0.5,
+            startY: window.innerHeight/2
         });
     })
 
