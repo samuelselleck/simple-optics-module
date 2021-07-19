@@ -30,6 +30,10 @@
         }
     }
 
+    function forwardEvalFocal(v) {
+        return v > 0 ? Math.max(v, 20) : Math.min(v, -20)
+    }
+
 </script>
 
 <OpticsObject {properties}>
@@ -39,8 +43,8 @@
     </svelte:fragment>
     <svelte:fragment slot="local">
         <!--Focal Length-->
-        <TranslationAnchor bind:property={properties.focal} dir={{x: 1, y: 0}}/>
-        <TranslationAnchor bind:property={properties.focal} dir={{x: -1, y: 0}}/>
+        <TranslationAnchor bind:property={properties.focal} dir={{x: 1, y: 0}} forwardEvalOverride={forwardEvalFocal}/>
+        <TranslationAnchor bind:property={properties.focal} dir={{x: -1, y: 0}} forwardEvalOverride={forwardEvalFocal}/>
         <!--Height-->
         <TranslationAnchor bind:property={properties.height} dir={{x: 0, y: 1}} scale=0.5/>
         <TranslationAnchor bind:property={properties.height} dir={{x: 0, y: -1}} scale=0.5/>

@@ -1,3 +1,22 @@
+<script>
+    export let edge;
+    export let snap;
+</script>
+
+<pattern id="smallGrid" width="10" height="10" patternUnits="userSpaceOnUse">
+    <path d="M 10 0 L 0 0 0 10" fill="none" stroke="gray" stroke-width="0.2"/>
+</pattern>
+<pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse">
+    <rect width="100" height="100" fill="url(#smallGrid)"/>
+    <path d="M 100 0 L 0 0 0 100" fill="none" stroke="gray" stroke-width="0.5"/>
+</pattern>
+
+<rect x={-edge} y={-edge} width={2*edge} height={2*edge} fill="url(#grid)" />
+
+{#if snap}
+    <line class="center-line" x1={edge} y1="0" x2={-edge} y2="0"/>
+{/if}
+
 <!--Markers-->
 <symbol>
     <circle id="anchor-marker" cx="0" cy="0" r="8" />
@@ -32,5 +51,12 @@
 
     #rotation-marker {
         fill: rgba(255, 255, 255, 0.5);
+    }
+
+    .center-line {
+        stroke: white;
+        stroke-width: 1;
+        stroke-dasharray: 5, 15;
+        opacity: 1;
     }
 </style>
