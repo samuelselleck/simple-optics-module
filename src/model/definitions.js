@@ -22,6 +22,13 @@ let idCounter = 0;
 
 function addApparatus(type, definition, create) {
     definition.build = pos => ({type, properties: {...create(), pos, angle: 0, id: idCounter++}});
+    definition.copy = old => {
+        let properties = {...old}
+        properties.pos = {x: old.pos.x, y: old.pos.y}
+        properties.id = idCounter++;
+        return {type, properties}
+    }
+
     definitions.set(type, definition)
 
     //Any object with the rays property in some way emmits light

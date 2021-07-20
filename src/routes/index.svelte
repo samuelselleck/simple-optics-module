@@ -15,13 +15,30 @@
 
     function createObject(event) {
         let pos = $toLocalCoords($zoomgroup, {x: window.innerWidth/2, y: window.innerHeight/2})
-        console.log(pos)
         apparatus = [...apparatus, definitions.get(event.detail.type).build(pos)]
     }
 
     function deleteSelected() {
         apparatus = apparatus.filter(o => o.properties.id != $selectedApparatus)
         $selectedApparatus = null;
+    }
+
+    function clear() {
+        let clear = confirm("Are you sure you want to clear the workspace?");
+        if (clear) {
+            apparatus = []
+            $selectedApparatus = null
+        }
+    }
+
+    function copySelected() {
+        let selected = apparatus.filter(o => o.properties.id == $selectedApparatus)[0]
+        if (selected) {
+            let copy = definitions.get(selected.type).copy(selected.properties)
+            copy.properties.pos.x += 10;
+            copy.properties.pos.y += 10;
+            apparatus = [...apparatus, copy]
+        }
     }
 
     $: selected = (() => {
@@ -43,12 +60,6 @@
         });
     })
 
-    function zoom(event) {
-        panzoom.zoomWithWheel(event, {
-            //focal: pos,
-        })
-    }
-
     function keydown(e) {
         if (e.key == "Delete") {
             deleteSelected()
@@ -61,7 +72,7 @@
 <div class="fill">
 
     <!--SVG Layer-->
-    <svg class="canvas fill"  on:mousewheel={zoom} bind:this={$svgCanvas} xmlns="http://www.w3.org/2000/svg">
+    <svg class="canvas fill"  on:mousewheel={panzoom.zoomWithWheel} bind:this={$svgCanvas} xmlns="http://www.w3.org/2000/svg">
         <g class="grid" bind:this={$zoomgroup}>
             <GlobalSVG {edge} snap={$snapToCenterline}/>    
             <RayLayer {apparatus}/>
@@ -75,7 +86,11 @@
     <div class="ui-layer">
         <div class="sidebar">
             <ObjectCreationMenu on:creating={createObject}/>
+            <span class="spacer"/>
             <button on:click={deleteSelected}> Del </button>
+            <button on:click={copySelected}> Copy </button>
+            <span class="spacer"/>
+            <button on:click={clear}> Clear </button>
         </div>
         <div class="bottom">
             <PropertiesDisplay bind:properties={selected}/>
@@ -100,16 +115,13 @@
         background: black;
     }
 
-    .grid {
-        background-size: 40px 40px;
-        background-image:
-            linear-gradient(to right, grey 1px, transparent 1px),
-            linear-gradient(to bottom, grey 1px, transparent 1px);
-    }
-
     .sidebar {
         float: left;
+    }
+
+    .sidebar > button {
         pointer-events: all;
+        display: block;
     }
 
     .right {
@@ -126,5 +138,10 @@
         pointer-events: all;
         position: absolute;
         bottom: 0;
+    }
+
+    .spacer {
+        display: block;
+        height: 1em;
     }
 </style>

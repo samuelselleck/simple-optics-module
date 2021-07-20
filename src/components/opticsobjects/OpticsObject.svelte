@@ -26,7 +26,7 @@
         moving = false;
     }
 
-    $: $snapToCenterline, properties.pos.y = 0, properties.angle = 0;
+    $: if($snapToCenterline) { properties.pos.y = 0, properties.angle = 0 };
     $: translation = `translate(${properties.pos.x},${properties.pos.y})`;
     $: rotation = `rotate(${toDegrees(properties.angle)}, 0, 0)`;
     $: selected = $selectedApparatus == properties.id;
