@@ -12,6 +12,8 @@
     let apparatus = []
     let panzoom;
     let edge = 100000;
+    
+    let mousePos = {x: 0, y: 0}
 
     function createObject(event) {
         let pos = $toLocalCoords($zoomgroup, {x: window.innerWidth/2, y: window.innerHeight/2})
@@ -65,83 +67,100 @@
             deleteSelected()
         }
     }
+
+    function moved(e) {
+        mousePos = $toLocalCoords($zoomgroup, {x: e.clientX, y: e.clientY})
+    }
 </script>
 
-<svelte:window on:keydown={keydown}/>
+<svelte:window on:pointermove={moved} on:keydown={keydown}/>
 
-<div class="fill">
+<!--SVG Layer-->
+<svg class="fill canvas"  on:mousewheel={panzoom.zoomWithWheel} bind:this={$svgCanvas} xmlns="http://www.w3.org/2000/svg">
+    <g bind:this={$zoomgroup}>
+        <GlobalSVG {edge} snap={$snapToCenterline}/>    
+        <RayLayer {apparatus}/>
+        {#each apparatus as o (o.properties.id)}
+            <svelte:component this={definitions.get(o.type).component} properties={o.properties}/>
+        {/each}
+    </g>
+</svg>
 
-    <!--SVG Layer-->
-    <svg class="canvas fill"  on:mousewheel={panzoom.zoomWithWheel} bind:this={$svgCanvas} xmlns="http://www.w3.org/2000/svg">
-        <g class="grid" bind:this={$zoomgroup}>
-            <GlobalSVG {edge} snap={$snapToCenterline}/>    
-            <RayLayer {apparatus}/>
-            {#each apparatus as o (o.properties.id)}
-                <svelte:component this={definitions.get(o.type).component} properties={o.properties}/>
-            {/each}
-        </g>
-    </svg>
+<!--HTML Controls Layer-->
+<div class="fill ui-layer">
 
-    <!--HTML Controls Layer-->
-    <div class="ui-layer">
-        <div class="sidebar">
+    <div class="left ui">
+        <div class="btngroup">
             <ObjectCreationMenu on:creating={createObject}/>
-            <span class="spacer"/>
+        </div>
+        <div class="btngroup">
             <button on:click={deleteSelected}> Del </button>
             <button on:click={copySelected}> Copy </button>
-            <span class="spacer"/>
+        </div>
+        <div class="btngroup">
             <button on:click={clear}> Clear </button>
         </div>
-        <div class="bottom">
-            <PropertiesDisplay bind:properties={selected}/>
-            <label class="right">
-                Snap Objects To Center
-                <input type="checkbox" bind:checked={$snapToCenterline}/>
-            </label>
-        </div>
     </div>
+
+    <div class="right">
+        x: {parseInt(mousePos.x)}, y: {parseInt(mousePos.y)}
+    </div>
+
+    <div class="bottom ui">
+        <PropertiesDisplay bind:properties={selected}/>
+        <label class="right">
+            Center
+            <input type="checkbox" bind:checked={$snapToCenterline}/>
+        </label>
+    </div>
+
 </div>
 
 <style>
     .ui-layer {
-        position: relative;
-        z-index: 100;
-        height: 100%;
-        width: 100%;
+        z-index: 1;
         pointer-events: none;
         color: white;
     }
+
     .canvas {
         background: black;
     }
 
-    .sidebar {
-        float: left;
+    .ui {
+        pointer-events: all;
     }
 
-    .sidebar > button {
-        pointer-events: all;
-        display: block;
+    .left {
+        float: left;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        max-height: 90%;
+    }
+
+    .btngroup {
+        margin-bottom: 10px;
+        display: inline-flex;
+        flex-direction: column;
+        flex-wrap: wrap;
     }
 
     .right {
-        margin-left: auto
+        float:right;
     }
 
     .bottom {
-        align-items:  right;
-        background: var(--main-gray);
-        display: flex;
-        justify-content: space-between;
-        width:100%;
-        text-align: right;
         pointer-events: all;
-        position: absolute;
+        background: var(--main-gray);
+        width:100%;
+        min-height: 2em;
+        position: fixed;
         bottom: 0;
-    }
 
-    .spacer {
-        display: block;
-        height: 1em;
+        display: flex;
+        flex-direction: row;
+        justify-content:space-between;
+        flex-wrap: wrap;
     }
 </style>

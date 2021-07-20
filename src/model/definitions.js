@@ -41,7 +41,7 @@ function addApparatus(type, definition, create) {
     }
 }
 
-addApparatus("beam", {
+addApparatus("Beam", {
     component: Beam,
 
     rays: function(properties) {
@@ -59,7 +59,7 @@ addApparatus("beam", {
 
 }, () => ({height: 250}))
 
-addApparatus("cone light", {
+addApparatus("Cone Light", {
     component: ConeLight,
 
     rays: function(properties) {
@@ -78,7 +78,7 @@ addApparatus("cone light", {
 
 }, () => ({height: 50, length: 100}))
 
-addApparatus("lens", {
+addApparatus("Lens", {
     component: Lens,
     hit: function(properties, ray) {
         let intersectionData = rayLineIntersect(ray, properties.pos, properties.angle, properties.height)
@@ -89,7 +89,7 @@ addApparatus("lens", {
     }
 }, () => ({height: 300, focal: 500}))
 
-addApparatus("rectangle lens", {
+addApparatus("Rectangle Lens", {
     component: RectangleLens,
     hit: function(properties, ray) {
         let intersectionData = rayBoxIntersect(ray, properties.pos, properties.angle, properties.height, properties.width)
@@ -100,7 +100,7 @@ addApparatus("rectangle lens", {
     }
 }, () => ({height: 300, width: 30, n: 1.5}))
 
-addApparatus("prism", {
+addApparatus("Prism", {
     component: Prism,
     hit: function(properties, ray) {
         let intersectionData = rayPrismIntesect(ray, properties.pos, properties.angle, properties.radius, properties.sides)
@@ -111,7 +111,7 @@ addApparatus("prism", {
     }
 }, () => ({radius: 100, sides: 3, n: 1.5}))
 
-addApparatus("wall", {
+addApparatus("Wall", {
     component: Wall,
     hit: function(properties, ray) {
         let intersectionData = rayBoxIntersect(ray, properties.pos, properties.angle, properties.height, properties.width)
@@ -123,7 +123,7 @@ addApparatus("wall", {
 }, () => ({height: 300, width: 30}))
 
 
-addApparatus("mirror", {
+addApparatus("Mirror", {
     component: Mirror,
     hit: function(properties, ray) {
 
@@ -133,4 +133,4 @@ addApparatus("mirror", {
             refracted: () => idealRefraction(intersectionData, properties.curve, true, true)
         }
     },
-}, () => ({height: 400, curve: 100}))
+}, () => ({height: 400, curve: 0}))

@@ -12,16 +12,7 @@
 </script>
 
 
-<div class="container">
-    {#each items as type}
-        <button on:click={() => creatingOpticsObject(type)}>{type}</button>
-    {/each}
-</div>
 
-<style>
-    .container {
-        display: flex;
-        flex-direction: column;
-        flex-wrap: wrap;
-    }
-</style>
+{#each items as type}
+    <button on:click={() => creatingOpticsObject(type)}>{type}</button>
+{/each}
