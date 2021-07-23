@@ -5,7 +5,7 @@
     import ObjectCreationMenu from '../components/html-controls/ObjectCreationMenu.svelte';
     import PropertiesDisplay from '../components/html-controls/PropertiesDisplay.svelte';
     import { definitions } from '../model/definitions.js'
-    import { selectedApparatus, snapToCenterline } from '../stores.js'
+    import { selectedApparatus, snapToCenterline, scale } from '../stores.js'
     import Panzoom from '@panzoom/panzoom';
     import { onMount } from 'svelte';
 
@@ -57,7 +57,7 @@
             cursor: "default",
             canvas: true,
             maxScale: 2,
-            minScale: 0.5,
+            minScale: 0.1,
             startY: window.innerHeight/2
         });
     })
@@ -71,13 +71,17 @@
     function moved(e) {
         mousePos = $toLocalCoords($zoomgroup, {x: e.clientX, y: e.clientY})
     }
+
+    function zoomchanged(event) {
+        $scale = event.detail.scale
+    }
 </script>
 
 <svelte:window on:pointermove={moved} on:keydown={keydown}/>
 
 <!--SVG Layer-->
 <svg class="fill canvas"  on:mousewheel={panzoom.zoomWithWheel} bind:this={$svgCanvas} xmlns="http://www.w3.org/2000/svg">
-    <g bind:this={$zoomgroup}>
+    <g bind:this={$zoomgroup} on:panzoomchange={zoomchanged}>
         <GlobalSVG {edge} snap={$snapToCenterline}/>    
         <RayLayer {apparatus}/>
         {#each apparatus as o (o.properties.id)}

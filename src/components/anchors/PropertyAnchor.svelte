@@ -1,5 +1,9 @@
 <script>
+import { onMount } from "svelte";
+
+    import { scale } from "../../stores.js";
     import { sub, add } from "../../utils/vectormath";
+    import { isTouchDevice } from '../../utils/utils';
     import CallbackAnchor from "./CallbackAnchor.svelte";
 
 
@@ -22,13 +26,21 @@
         property = forwardEval(pos)
     }
 
-    let marker;
 
+    let isTouch = false;
+    onMount(() => {
+        isTouch = isTouchDevice()
+    })
+
+    $: markerScale = 1/$scale*(isTouch ? 1.7 : 1);
+    $: console.log(markerScale)
+
+    let marker;
 </script>
 
 <CallbackAnchor bind:pos relativeToObject={marker} {changed} {start}>
     <g bind:this={marker}>
-        <g transform="translate({pos.x}, {pos.y})">
+        <g transform="translate({pos.x}, {pos.y}) scale({markerScale})">
             <slot/>
         </g>
     </g>
