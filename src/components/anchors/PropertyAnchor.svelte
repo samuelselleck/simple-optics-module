@@ -26,14 +26,12 @@ import { onMount } from "svelte";
         property = forwardEval(pos)
     }
 
-
     let isTouch = false;
     onMount(() => {
         isTouch = isTouchDevice()
     })
 
     $: markerScale = 1/$scale*(isTouch ? 1.7 : 1);
-    $: console.log(markerScale)
 
     let marker;
 </script>

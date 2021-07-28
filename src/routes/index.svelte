@@ -17,7 +17,9 @@
 
     function createObject(event) {
         let pos = $toLocalCoords($zoomgroup, {x: window.innerWidth/2, y: window.innerHeight/2})
-        apparatus = [...apparatus, definitions.get(event.detail.type).build(pos)]
+        let new_apparatus =  definitions.get(event.detail.type).build(pos)
+        apparatus = [...apparatus, new_apparatus]
+        $selectedApparatus = new_apparatus.properties.id;
     }
 
     function deleteSelected() {
@@ -68,8 +70,10 @@
         }
     }
 
+
     function moved(e) {
         mousePos = $toLocalCoords($zoomgroup, {x: e.clientX, y: e.clientY})
+        $selectedApparatus = null
     }
 
     function zoomchanged(event) {
@@ -77,10 +81,10 @@
     }
 </script>
 
-<svelte:window on:pointermove={moved} on:keydown={keydown}/>
+<svelte:window on:keydown={keydown}/>
 
 <!--SVG Layer-->
-<svg class="fill canvas"  on:mousewheel={panzoom.zoomWithWheel} bind:this={$svgCanvas} xmlns="http://www.w3.org/2000/svg">
+<svg class="fill canvas" on:mousewheel={panzoom.zoomWithWheel} bind:this={$svgCanvas} xmlns="http://www.w3.org/2000/svg">
     <g bind:this={$zoomgroup} on:panzoomchange={zoomchanged}>
         <GlobalSVG {edge} snap={$snapToCenterline}/>    
         <RayLayer {apparatus}/>
