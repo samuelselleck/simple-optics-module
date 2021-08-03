@@ -6,7 +6,6 @@
     import PropertiesDisplay from '../components/html-controls/PropertiesDisplay.svelte';
     import { definitions } from '../model/definitions.js'
     import { selectedApparatus, snapToCenterline, scale } from '../stores.js'
-    import { download } from '../utils/utils.js';
     import Panzoom from '@panzoom/panzoom';
     import { onMount } from 'svelte';
     import { saveAs } from 'file-saver';

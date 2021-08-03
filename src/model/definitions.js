@@ -89,7 +89,7 @@ addApparatus("Lens", {
     }
 }, () => ({height: 300, focal: 500}))
 
-addApparatus("Rectangle Lens", {
+addApparatus("Block", {
     component: RectangleLens,
     hit: function(properties, ray) {
         let intersectionData = rayBoxIntersect(ray, properties.pos, properties.angle, properties.height, properties.width)
