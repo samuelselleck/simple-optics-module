@@ -13,6 +13,7 @@
   },
   "type": "module",
   "dependencies": {
-    "@panzoom/panzoom": "^4.4.1"
+    "@panzoom/panzoom": "^4.4.1",
+    "file-saver": "^2.0.5"
   }
 }

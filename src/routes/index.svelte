@@ -6,8 +6,10 @@
     import PropertiesDisplay from '../components/html-controls/PropertiesDisplay.svelte';
     import { definitions } from '../model/definitions.js'
     import { selectedApparatus, snapToCenterline, scale } from '../stores.js'
+    import { download } from '../utils/utils.js';
     import Panzoom from '@panzoom/panzoom';
     import { onMount } from 'svelte';
+    import { saveAs } from 'file-saver';
 
     let apparatus = []
     let panzoom;
@@ -45,6 +47,23 @@
         }
     }
 
+    function save() {
+        console.log(apparatus)
+        let json = JSON.stringify(apparatus, null, 3);
+        let blob = new Blob([json], {type: "text/plain;charset=utf-8"});
+        saveAs(blob, "optics.json")
+    }
+
+    function load(e) {
+       let files = e.target.files;
+       let file = files[0];         
+       let reader = new FileReader();
+       reader.onload = function(event) {
+         apparatus = JSON.parse(event.target.result);     
+       }
+       reader.readAsText(file)
+    }
+
     $: selected = (() => {
         let arr = apparatus.filter(o => o.properties.id == $selectedApparatus)
         if(arr.length  > 0) {
@@ -73,7 +92,6 @@
 
     function moved(e) {
         mousePos = $toLocalCoords($zoomgroup, {x: e.clientX, y: e.clientY})
-        $selectedApparatus = null
     }
 
     function zoomchanged(event) {
@@ -81,7 +99,7 @@
     }
 </script>
 
-<svelte:window on:keydown={keydown}/>
+<svelte:window on:pointermove={moved} on:keydown={keydown}/>
 
 <!--SVG Layer-->
 <svg class="fill canvas" on:mousewheel={panzoom.zoomWithWheel} bind:this={$svgCanvas} xmlns="http://www.w3.org/2000/svg">
@@ -116,15 +134,31 @@
 
     <div class="bottom ui">
         <PropertiesDisplay bind:properties={selected}/>
-        <label class="right">
-            Center
-            <input type="checkbox" bind:checked={$snapToCenterline}/>
-        </label>
+        <div>
+            <!--<label class="right">
+                Center
+                <input type="checkbox" bind:checked={$snapToCenterline}/>
+            </label>-->
+            <button on:click={save}> Save </button>
+            <label class="upload">
+                Load 
+                <input type="file" on:change={load}>
+            </label>
+        </div>
     </div>
 
 </div>
 
 <style>
+
+    input[type="file"] {
+        display: none;
+    }
+
+    .upload {
+        padding: 6px 12px;
+        cursor: pointer;
+    }
     .ui-layer {
         z-index: 1;
         pointer-events: none;
