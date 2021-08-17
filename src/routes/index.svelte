@@ -1,3 +1,11 @@
+<script context="module">
+    export async function load({ page, fetch, session, context }) {
+        const encodedApparatus = page.query.get("apparatus") ?? encodeURI(JSON.stringify([]));
+        return {props: {encodedApparatus, baseURL: page.host}}
+    }
+</script>
+
+
 <script>
     import { svgCanvas, zoomgroup, toLocalCoords } from '../stores.js';
     import GlobalSVG from '../components/GlobalSVG.svelte';
@@ -10,7 +18,11 @@
     import { onMount } from 'svelte';
     import { saveAs } from 'file-saver';
 
-    let apparatus = []
+    export let baseURL;
+    export let encodedApparatus;
+
+    let apparatus = parseApparatus(encodedApparatus)
+    console.log(apparatus)
     let panzoom;
     let edge = 100000;
     
@@ -19,6 +31,7 @@
     function createObject(event) {
         let pos = $toLocalCoords($zoomgroup, {x: window.innerWidth/2, y: window.innerHeight/2})
         let new_apparatus =  definitions.get(event.detail.type).build(pos)
+        new_apparatus.properties.id = apparatus.length;
         apparatus = [...apparatus, new_apparatus]
         $selectedApparatus = new_apparatus.properties.id;
     }
@@ -42,25 +55,31 @@
             let copy = definitions.get(selected.type).copy(selected.properties)
             copy.properties.pos.x += 10;
             copy.properties.pos.y += 10;
+            copy.properties.id = apparatus.length;
             apparatus = [...apparatus, copy]
         }
     }
 
     function save() {
-        console.log(apparatus)
-        let json = JSON.stringify(apparatus, null, 3);
-        let blob = new Blob([json], {type: "text/plain;charset=utf-8"});
-        saveAs(blob, "optics.json")
+        let json = encodeURI(JSON.stringify(apparatus, null, 0))
+        let url = baseURL + "?apparatus=" + json;
+
+        //Chrome
+        if (navigator.clipboard != undefined) {
+            navigator.clipboard.writeText(url).then(function () {
+                alert("Copied Workspace URL to Clipboard")
+            }, function (err) {
+                alert("Workspace link: " + url)
+            });
+        }
+        // Internet Explorer
+        else if(window.clipboardData) { 
+            window.clipboardData.setData("Text", url);
+        }
     }
 
-    function load(e) {
-       let files = e.target.files;
-       let file = files[0];         
-       let reader = new FileReader();
-       reader.onload = function(event) {
-         apparatus = JSON.parse(event.target.result);     
-       }
-       reader.readAsText(file)
+    function parseApparatus(e) {
+       return JSON.parse(decodeURI(e))
     }
 
     $: selected = (() => {
@@ -71,7 +90,7 @@
             return null;
         }
     })()
-
+    
     onMount(() => {
         panzoom = Panzoom($zoomgroup, {
             cursor: "default",
@@ -138,11 +157,7 @@
                 Center
                 <input type="checkbox" bind:checked={$snapToCenterline}/>
             </label>-->
-            <button on:click={save}> Save </button>
-            <label class="upload">
-                Load 
-                <input type="file" on:change={load}>
-            </label>
+            <button width on:click={save}> Copy to Clipboard </button>
         </div>
     </div>
 
@@ -150,14 +165,6 @@
 
 <style>
 
-    input[type="file"] {
-        display: none;
-    }
-
-    .upload {
-        padding: 6px 12px;
-        cursor: pointer;
-    }
     .ui-layer {
         z-index: 1;
         pointer-events: none;
