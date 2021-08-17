@@ -22,7 +22,6 @@
     export let encodedApparatus;
 
     let apparatus = parseApparatus(encodedApparatus)
-    console.log(apparatus)
     let panzoom;
     let edge = 100000;
     
