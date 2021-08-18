@@ -1,10 +1,9 @@
 <script context="module">
-    export async function load({ page, fetch, session, context }) {
-        const encodedApparatus = page.query.get("apparatus") ?? encodeURI(JSON.stringify([]));
+    export async function load({page}) {
+        const encodedApparatus = page.query.get("apparatus") ?? "";
         return {props: {encodedApparatus, baseURL: page.host}}
     }
 </script>
-
 
 <script>
     import { svgCanvas, zoomgroup, toLocalCoords } from '../stores.js';
@@ -16,12 +15,19 @@
     import { selectedApparatus, snapToCenterline, scale } from '../stores.js'
     import Panzoom from '@panzoom/panzoom';
     import { onMount } from 'svelte';
-    import { saveAs } from 'file-saver';
+    import { encodeApparatus, decodeApparatus } from '../utils/utils.js';
 
     export let baseURL;
     export let encodedApparatus;
 
-    let apparatus = parseApparatus(encodedApparatus)
+    let apparatus = [];
+
+    decodeApparatus(encodedApparatus).then(a => {
+        apparatus = a;
+    }).catch(err => {
+        alert("Sorry! Failed to load apparatus URL code.")
+    });
+
     let panzoom;
     let edge = 100000;
     
@@ -30,7 +36,6 @@
     function createObject(event) {
         let pos = $toLocalCoords($zoomgroup, {x: window.innerWidth/2, y: window.innerHeight/2})
         let new_apparatus =  definitions.get(event.detail.type).build(pos)
-        new_apparatus.properties.id = apparatus.length;
         apparatus = [...apparatus, new_apparatus]
         $selectedApparatus = new_apparatus.properties.id;
     }
@@ -54,31 +59,28 @@
             let copy = definitions.get(selected.type).copy(selected.properties)
             copy.properties.pos.x += 10;
             copy.properties.pos.y += 10;
-            copy.properties.id = apparatus.length;
             apparatus = [...apparatus, copy]
         }
     }
 
     function save() {
-        let json = encodeURI(JSON.stringify(apparatus, null, 0))
-        let url = baseURL + "?apparatus=" + json;
-
-        //Chrome
-        if (navigator.clipboard != undefined) {
-            navigator.clipboard.writeText(url).then(function () {
-                alert("Copied Workspace URL to Clipboard")
-            }, function (err) {
-                alert("Workspace link: " + url)
-            });
-        }
-        // Internet Explorer
-        else if(window.clipboardData) { 
-            window.clipboardData.setData("Text", url);
-        }
-    }
-
-    function parseApparatus(e) {
-       return JSON.parse(decodeURI(e))
+        encodeApparatus(apparatus).then(base64 => {
+            let url = baseURL + "?apparatus=" + base64;
+            //Chrome
+            if (navigator.clipboard != undefined) {
+                navigator.clipboard.writeText(url).then(function () {
+                    alert("Copied Workspace URL to Clipboard")
+                }, function (err) {
+                    alert("Workspace link: " + url)
+                });
+            }
+            // Internet Explorer
+            else if(window.clipboardData) { 
+                window.clipboardData.setData("Text", url);
+            }
+        }).catch(err => {
+            alert("failed to create url, sorry!")
+        })
     }
 
     $: selected = (() => {

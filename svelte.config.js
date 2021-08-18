@@ -6,7 +6,7 @@ const config = {
 		target: '#svelte',
 		adapter: adapter({
 			pages: 'simple',
-			fallback: null,
+			fallback: "index.html",
 		}),
 	}
 };

@@ -21,7 +21,8 @@ export let manipulators = []
 let idCounter = 0;
 
 function addApparatus(type, definition, create) {
-    definition.build = pos => ({type, properties: {...create(), pos, angle: 0}});
+    definition.properties = Object.keys(create());
+    definition.build = pos => ({type, properties: {...create(), pos, angle: 0, id: idCounter++}});
     definition.copy = old => {
         let properties = {...old}
         properties.pos = {x: old.pos.x, y: old.pos.y}
