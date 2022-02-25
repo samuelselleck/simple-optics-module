@@ -145,5 +145,5 @@ addApparatus("Surface", {
             refracted: () => snellRefraction(intersectionData, properties.n)
         }
     }
-}, () => ({height: 300, n: 1.5, curve:0}))
+}, () => ({height: 300, width: 0.5*window, n: 1.5, curve:0}))
     
