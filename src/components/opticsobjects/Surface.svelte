@@ -6,7 +6,7 @@ import { idealMode } from '../../stores'
 
 export let properties;
 $: h = properties.height;
-    w=properties.width*window.width;
+    w=properties.width;
     n= properties.n;
 
     $: path = () => {
