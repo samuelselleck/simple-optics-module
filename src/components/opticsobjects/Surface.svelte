@@ -5,9 +5,10 @@ import RotationAnchor from '../anchors/RotationAnchor.svelte'
 import { idealMode } from '../../stores'
 
 export let properties;
-$: h = properties.height;
-    w=properties.width;
-    n= properties.n;
+$: 
+    h = properties.height;
+    let w=properties.width;
+    let n= properties.n;
 
     $: path = () => {
         if($idealMode) { // ideal mode
