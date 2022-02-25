@@ -55,12 +55,15 @@
         <!--Height-->
         <TranslationAnchor bind:property={properties.height} dir={{x: 0, y: 1}} scale=0.5/>
         <TranslationAnchor bind:property={properties.height} dir={{x: 0, y: -1}} scale=0.5/>
-        <TranslationAnchor bind:property={properties.width} dir={{x: 1, y: 0}} scale=0.5/>
-        <TranslationAnchor bind:property={properties.width} dir={{x: -1, y: 0}} scale=0.5/>
+        <!--Curve-->
+        <TranslationAnchor bind:property={properties.curve} dir={{x: 1, y: 0}} forwardEvalOverride={lockToCenter}/>
+        {#if $idealMode}
+            <TranslationAnchor bind:property={properties.curve} dir={{x: -1, y: 0}} forwardEvalOverride={lockToCenter}/>
+        {/if}
     </svelte:fragment>
     <svelte:fragment slot="global">
-        <!--Rotation-->
-        <RotationAnchor bind:property={properties.angle} start={Math.PI} distance={properties.height/4 + 100}/>
+        <RotationAnchor bind:property={properties.angle} distance={properties.height/2 + 30}/>
+        <RotationAnchor bind:property={properties.angle} start={Math.PI} distance={properties.height/2 + 30}/>
     </svelte:fragment>
 </OpticsObject>
 
