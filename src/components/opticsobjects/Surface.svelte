@@ -1,13 +1,14 @@
 <script>
-import OpticsObject from "./OpticsObject.svelte";
-import TranslationAnchor from '../anchors/TranslationAnchor.svelte'
-import RotationAnchor from '../anchors/RotationAnchor.svelte'
-import { idealMode } from '../../stores'
+    import OpticsObject from "./OpticsObject.svelte";
+    import TranslationAnchor from '../anchors/TranslationAnchor.svelte'
+    import RotationAnchor from '../anchors/RotationAnchor.svelte'
+    import { idealMode } from '../../stores'
 
-export let properties;
-$: 
-    h = properties.height;
-    let w=properties.width;
+    export let properties;
+
+
+    $: h = properties.height;
+    let w=8;
     let n= properties.n;
 
     $: path = () => {
