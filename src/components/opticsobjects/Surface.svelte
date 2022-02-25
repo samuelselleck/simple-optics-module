@@ -7,8 +7,8 @@
     export let properties;
 
 
-    $: h = properties.height;
-    let w=8;
+    $: h = properties.height
+    let w=8
     let n= properties.n;
 
     $: path = () => {
