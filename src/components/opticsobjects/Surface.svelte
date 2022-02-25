@@ -43,13 +43,13 @@
     }
 
     function lockToCenter(v) {
-        return Math.abs(v) < properties.height ? 0 : v;
+        return Math.abs(v) < properties.height/20 ? 0 : v;
     }
 </script>
 
 <OpticsObject {properties}>
     <svelte:fragment slot="object">
-        <rect width={properties.width} height={properties.height} x={-properties.width/2} y={-properties.height/2}/>
+        <path fill="url(#mirror)" d={path()}/>
     </svelte:fragment>
     <svelte:fragment slot="local">
         <!--Height-->
@@ -65,7 +65,7 @@
 </OpticsObject>
 
 <style>
-    rect {
+    path {
         fill: url(#glass)
     }
 </style>
