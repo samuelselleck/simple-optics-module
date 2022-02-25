@@ -25,7 +25,7 @@
     decodeApparatus(encodedApparatus).then(a => {
         apparatus = a;
     }).catch(err => {
-        alert("Sorry! Failed to load apparatus URL code.")
+        console.log("Sorry! Failed to load apparatus URL code.")
     });
 
     let panzoom;
@@ -69,9 +69,9 @@
             //Chrome
             if (navigator.clipboard != undefined) {
                 navigator.clipboard.writeText(url).then(function () {
-                    alert("Copied Workspace URL to Clipboard")
+                    console.log("Copied Workspace URL to Clipboard")
                 }, function (err) {
-                    alert("Workspace link: " + url)
+                    console.log("Workspace link: " + url)
                 });
             }
             // Internet Explorer
@@ -79,7 +79,7 @@
                 window.clipboardData.setData("Text", url);
             }
         }).catch(err => {
-            alert("failed to create url, sorry!")
+            console.log("failed to create url, sorry!")
         })
     }
 
@@ -118,7 +118,7 @@
     }
 </script>
 
-<svelte:window on:pointermove={moved} on:keydown={keydown}/>
+<svelte:window on:keydown={keydown}/>
 
 <!--SVG Layer-->
 <svg class="fill canvas" on:mousewheel={panzoom.zoomWithWheel} bind:this={$svgCanvas} xmlns="http://www.w3.org/2000/svg">

@@ -11,6 +11,7 @@ import ConeLight from '../components/opticsobjects/ConeLight.svelte';
 import Wall from '../components/opticsobjects/Wall.svelte'
 import RectangleLens from '../components/opticsobjects/RectangleLens.svelte'
 import Prism from '../components/opticsobjects/Prism.svelte'
+import surface from '../components/opticsobjects/Surface.svelte'
 import { idealMode } from '../stores.js';
 import { dev } from '$app/env'
 
@@ -134,3 +135,15 @@ addApparatus("Mirror", {
         }
     },
 }, () => ({height: 400, curve: 0}))
+
+addApparatus("Surface", {
+    component: surface,
+    hit: function(properties, ray) {
+        let intersectionData = rayBoxIntersect(ray, properties.pos, properties.angle, properties.height, properties.width)
+        return {
+            dist: intersectionData.dist,
+            refracted: () => snellRefraction(intersectionData, properties.n)
+        }
+    }
+}, () => ({height: 300, n: 1.5, curve:0}))
+    
