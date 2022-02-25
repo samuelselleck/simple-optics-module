@@ -7,8 +7,7 @@ import { idealMode } from '../../stores'
 export let properties;
 $: h = properties.height;
    let w = 0.5; //let w = 300;
-    //let n = 1.5;
-    let moving = false; 
+    let n = 1.5;
 
     $: path = () => {
         if($idealMode) { // ideal mode
