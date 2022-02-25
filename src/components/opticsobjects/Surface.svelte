@@ -6,11 +6,11 @@ import { idealMode } from '../../stores'
 
 export let properties;
 $: h = properties.height;
-    //let w = 300;
+   let w = 0.5*window; //let w = 300;
     //let n = 1.5;
 
     $: path = () => {
-        if($idealMode) {
+        if($idealMode) { // ideal mode
             let r = -properties.curve
             if (r == 0) {
                 return`
