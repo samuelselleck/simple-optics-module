@@ -139,7 +139,7 @@ addApparatus("Mirror", {
 addApparatus("Surface", {
     component: surface,
     hit: function(properties, ray) {
-        let intersectionData = rayBoxIntersect(ray, properties.pos, properties.angle, properties.height)
+        let intersectionData = rayBoxIntersect(ray, properties.pos, properties.angle, properties.height, properties.width)
         return {
             dist: intersectionData.dist,
             refracted: () => snellRefraction(intersectionData, properties.n)
