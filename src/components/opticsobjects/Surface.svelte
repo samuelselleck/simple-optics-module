@@ -8,7 +8,8 @@
 
 
     $: h = properties.height
-    let w=8
+    let w= properties.width
+   
     $: path = () => {
         if($idealMode) { // ideal mode
             let r = -properties.curve
