@@ -3,28 +3,25 @@
     import TranslationAnchor from '../anchors/TranslationAnchor.svelte'
     import RotationAnchor from '../anchors/RotationAnchor.svelte'
     import { idealMode } from '../../stores'
-
     export let properties;
-
-
     $: h = properties.height
-    let w= properties.width
-   
+    let w = 100;
+
     $: path = () => {
-        if($idealMode) { // ideal mode
+        if($idealMode) {
             let r = -properties.curve
             if (r == 0) {
                 return`
-                    M${-w/2},${-h/2}
+                    M${0},${-h/2}
                     h${w}
                     v${h}
                     h${-w}
                     z`
-            } else if (r > 0) { //Convex, 
-                r = Math.max(-properties.curve*4, h) 
+            } else if (r > 0) { //Convex
+                r = Math.max(-properties.curve*4, h)
                 return`
                     M0,${-h/2}
-                    a${r},${r} 0 0,0 0,${h}
+                    a${r},${r} 0 0,0 0,${h},${w}
                     z`
 
             } else { //Concave
@@ -50,26 +47,19 @@
 
 <OpticsObject {properties}>
     <svelte:fragment slot="object">
-        <path fill="url(#mirror)" d={path()}/>
+        <rect fill="url(#glass)" width={10000} height={properties.height} x={0} y={-properties.height/2}/>   
+    <path fill="url(#glass)" d={path()} x={0} y={-properties.height/2}/> <!--<path width={1000000} height={properties.height} x={0} y={-properties.height/2}/>-->
     </svelte:fragment>
     <svelte:fragment slot="local">
         <!--Height-->
         <TranslationAnchor bind:property={properties.height} dir={{x: 0, y: 1}} scale=0.5/>
-        <TranslationAnchor bind:property={properties.height} dir={{x: 0, y: -1}} scale=0.5/>
-        <!--Curve-->
-        <TranslationAnchor bind:property={properties.curve} dir={{x: 1, y: 0}} forwardEvalOverride={lockToCenter}/>
-        {#if $idealMode}
-            <TranslationAnchor bind:property={properties.curve} dir={{x: -1, y: 0}} forwardEvalOverride={lockToCenter}/>
-        {/if}
+        <!--<TranslationAnchor bind:property={properties.height} dir={{x: 0, y: -1}} scale=0.5/>-->
+        <TranslationAnchor bind:property={properties.curve} dir={{x: -1, y: 0}} forwardEvalOverride={lockToCenter}/>
     </svelte:fragment>
     <svelte:fragment slot="global">
-        <RotationAnchor bind:property={properties.angle} distance={properties.height/2 + 30}/>
-        <RotationAnchor bind:property={properties.angle} start={Math.PI} distance={properties.height/2 + 30}/>
+        <!--Rotation-->
+        <!--<RotationAnchor bind:property={properties.angle} start={Math.PI} distance={properties.height/4 + 100}/>-->
     </svelte:fragment>
 </OpticsObject>
 
-<style>
-    path {
-        fill: url(#glass)
-    }
-</style>
+

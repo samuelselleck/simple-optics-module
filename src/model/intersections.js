@@ -30,6 +30,42 @@ export function rayBoxIntersect(ray, origin, angle, height, width) {
     return closestIntersectionData;
 }
 
+export function raySurfIntersect(ray, origin, angle, height, curvature){
+    let x = 100; 
+    let segmentLength = 2*Math.PI*curvature*2*Math.asin(height/2/curvature)/360/x;
+    let closestIntersectionData = {dist: Infinity}
+    let intersectionData;
+    if(curvature==0){
+        return rayLineIntersect(ray, origin, angle, height);
+    }
+    else if(curvature < 0){
+        //let segmentLength = Math.tan(Math.PI/x)*2*height;
+        for(let i = 0; i < x; i++) {
+        let a = 45//i*2*Math.asin(height/2/curvature);
+        let o = add(origin, mult(unitVecFromAngle(-a + angle), curvature))
+        intersectionData = rayLineIntersect(ray, o, a,  segmentLength)
+        if(intersectionData.dist > 1e-6 && intersectionData.dist < closestIntersectionData.dist) {
+            closestIntersectionData = intersectionData;
+        //for(let i=0; i<x; i++){
+          //  let a = (x-i)*Math.asin(height/2/curvature)/x/2
+            //let o = add(origin, mult(unitVecFromAngle(a + angle),curvature))
+            //intersectionData = rayLineIntersect(ray, o, a, segmentLength)
+        }}
+        //let segmentLength = 2*Math.sin(Math.asin(height/2/curvature)) //all segments have equal lenght
+
+        
+    }
+    else if(curvature>0){
+
+
+    }
+
+        //if(intersectionData.dist > 1e-6 && intersectionData.dist < closestIntersectionData.dist) {
+            closestIntersectionData = intersectionData;
+        //}
+    return closestIntersectionData;
+}
+
 export function rayPrismIntesect(ray, origin, angle, orthogonalDistance, sides) {
     let closestIntersectionData = {dist: Infinity}
     let segmentLength = Math.tan(2*Math.PI/sides/2)*2*orthogonalDistance;
@@ -88,4 +124,19 @@ export function snellRefraction(intersectionData, n) {
     let p = add(intersectionData.ray.p, mult(intersectionData.ray.r, intersectionData.dist));
     return {p, r}
 }
+//export function snellRefractionN(intersectionData, n1, n2) {
+  //  let cross = crossSign(intersectionData.segment, intersectionData.ray.r)
+    //let normal = norm(rotate(intersectionData.segment, cross*Math.PI/2))
+    //let angleIn = angleBetween(intersectionData.ray.r, normal);
+   // let angleOut;
+   // if (cross > 0) {
+   //     angleOut = Math.asin(n1/n2*Math.sin(angleIn))
+    //} else if (Math.abs(angleIn) <= Math.asin(n1/n2)) {
+     //   angleOut = Math.asin(n1*Math.sin(angleIn)/n2)
+    //} else {
+      //  angleOut = Math.PI - angleIn;
+    //}
+//
+  //  return  {p, r}
+//}
 

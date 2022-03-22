@@ -2,7 +2,7 @@ import { mult, sub, add, unitVecFromAngle, rotate,
          norm, length, crossSign, angleBetween, div, intersectionParameters,
          angle, reflect, boundAngle, dot} from '../utils/vectormath.js';
 
-import { rayLineIntersect, rayBoxIntersect, idealRefraction, snellRefraction, rayPrismIntesect } from './intersections.js';
+import { rayLineIntersect, rayBoxIntersect, idealRefraction, snellRefraction, rayPrismIntesect, raySurfIntersect } from './intersections.js';
 
 import Lens from '../components/opticsobjects/Lens.svelte';
 import Beam from '../components/opticsobjects/Beam.svelte';
@@ -139,11 +139,13 @@ addApparatus("Mirror", {
 addApparatus("Surface", {
     component: surface,
     hit: function(properties, ray) {
-        let intersectionData = rayPrismIntesect(ray, properties.pos, properties.angle, -properties.curve, 100)
+        let intersectionData = raySurfIntersect(ray,properties.pos, properties.angle, properties.height ,properties.curve)
+        //let intersectionData = rayPrismIntesect(ray, )
+        //let intersectionData = rayLineIntersect(ray, properties.pos, properties.angle, properties.height)
         return {
             dist: intersectionData.dist,
-            refracted: () => snellRefraction(intersectionData, properties.n)
+            refracted: () => snellRefraction(intersectionData, properties.n)//snellRefractionN(intersectionData, properties.n1, properties.n2)
         }
-    }
-}, () => ({height: 300, width: 400,  n: 1.5, curve:0}))
+    },
+}, () => ({height: 1000, n: 3.5,  curve:0}))
     
