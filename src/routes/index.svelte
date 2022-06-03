@@ -32,6 +32,7 @@
     let edge = 100000;
     
     let mousePos = {x: 0, y: 0}
+    let saved = "";
 
     function createObject(event) {
         let pos = $toLocalCoords($zoomgroup, {x: window.innerWidth/2, y: window.innerHeight/2})
@@ -66,6 +67,8 @@
     function save() {
         encodeApparatus(apparatus).then(base64 => {
             let url = baseURL + "?apparatus=" + base64;
+            saved = url;
+            //alert("SAVE URL: " + url)
             //Chrome
             if (navigator.clipboard != undefined) {
                 navigator.clipboard.writeText(url).then(function () {
@@ -107,7 +110,6 @@
             deleteSelected()
         }
     }
-
 
     function moved(e) {
         mousePos = $toLocalCoords($zoomgroup, {x: e.clientX, y: e.clientY})
@@ -158,7 +160,8 @@
                 Center
                 <input type="checkbox" bind:checked={$snapToCenterline}/>
             </label>-->
-            <button width on:click={save}> Copy to Clipboard </button>
+            <input style="background-color: black;color:white;" value={saved}>
+                <button width on:click={save}> Generate </button>
         </div>
     </div>
 
