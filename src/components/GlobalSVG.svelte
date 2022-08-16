@@ -37,8 +37,12 @@
         <stop offset="100%" style="stop-color:#CCCCDD;stop-opacity:1" />
     </linearGradient>
     <linearGradient id="metal">
-        <stop offset="0%" stop-color="#2e2b30"></stop>
-        <stop offset="100%" stop-color="#1d1c1f"></stop>
+        <stop offset="0%" stop-color="#999999"></stop>
+        <stop offset="100%" stop-color="#858585"></stop>
+    </linearGradient>
+    <linearGradient id="surface" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:white;stop-opacity:0.7" />
+        <stop offset="100%" style="stop-color:white;stop-opacity:0.3" />
     </linearGradient>
 </defs>
 

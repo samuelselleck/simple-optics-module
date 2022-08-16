@@ -3,7 +3,7 @@ import { mult, sub, add, unitVecFromAngle, rotate,
     angle, reflect, boundAngle, dot} from '../utils/vectormath.js';
     
 
-export function rayLineIntersect(ray, origin, angle, height) {
+export function rayLineIntersect(ray, origin, angle, height) { //returns info on where the next intersection of a ray happens
 
     let segment = mult(unitVecFromAngle(angle + Math.PI/2), height)
     let pos = sub(origin, div(segment, 2))
@@ -31,31 +31,50 @@ export function rayBoxIntersect(ray, origin, angle, height, width) {
 }
 
 export function raySurfIntersect(ray, origin, angle, height, curvature){
-    let x = 100; 
-    let segmentLength = 2*Math.PI*curvature*2*Math.asin(height/2/curvature)/360/x;
+    let x = 500; //larger makes it very slow, but smaller makes it refract weirdly
     let closestIntersectionData = {dist: Infinity}
     let intersectionData;
+    let h=height/2;
+    let R = (-curvature)
+    //let T = 2*Math.abs(Math.asin(h/R))
+    let segmentLength = Math.tan(2*Math.PI/x/2)*2*R //500//10*R*T/x//Math.pow( add(2*Math.pow(R,2), 2*R*R*Math.cos(h/2/R))/x,1/2)//2*Math.asin(h/curvature)/x/Math.abs(R);
     if(curvature==0){
         return rayLineIntersect(ray, origin, angle, height);
     }
-    else if(curvature < 0){
-        //let segmentLength = Math.tan(Math.PI/x)*2*height;
-        for(let i = 0; i < x; i++) {
-        let a = 45//i*2*Math.asin(height/2/curvature);
-        let o = add(origin, mult(unitVecFromAngle(-a + angle), curvature))
-        intersectionData = rayLineIntersect(ray, o, a,  segmentLength)
-        if(intersectionData.dist > 1e-6 && intersectionData.dist < closestIntersectionData.dist) {
+    else if(curvature < 0){ //convex surface, R>0
+        let segmentLength = Math.tan(Math.PI/x)*2*height;
+        //for(let i = 0; i < x; i++) {
+        //let a = T/2//(Math.PI/2, Math.asin(R/h));//Math.asin(R/h)//add
+        //let o = origin//add(origin, mult(unitVecFromAngle(Math.PI/2),-h))
+       for(let i=-x/2; i<x/2; i++){ //first segment is at 
+            let a =i*Math.PI/x //angle between segment i and y axis. This one needs to depend on curvature.
+            let o = add(origin, mult(unitVecFromAngle(a + angle), -h))
+            rayLineIntersect(ray, o, a + angle,  segmentLength)
+            let intersectionData = rayLineIntersect(ray, o, a ,  -segmentLength) //spara intersection data för segment 1
+       if(intersectionData.dist > 1e-6 && intersectionData.dist < closestIntersectionData.dist) {
             closestIntersectionData = intersectionData;
-        //for(let i=0; i<x; i++){
-          //  let a = (x-i)*Math.asin(height/2/curvature)/x/2
-            //let o = add(origin, mult(unitVecFromAngle(a + angle),curvature))
-            //intersectionData = rayLineIntersect(ray, o, a, segmentLength)
-        }}
-        //let segmentLength = 2*Math.sin(Math.asin(height/2/curvature)) //all segments have equal lenght
+        }
+       }
+       
+    
 
-        
+        return closestIntersectionData;
     }
     else if(curvature>0){
+        let segmentLength = Math.tan(Math.PI/x)*2*height;
+        //for(let i = 0; i < x; i++) {
+        //let a = T/2//(Math.PI/2, Math.asin(R/h));//Math.asin(R/h)//add
+        //let o = origin//add(origin, mult(unitVecFromAngle(Math.PI/2),-h))
+       for(let i=-x/2; i<x/2; i++){ //first segment is at 
+            let a =i*Math.PI/x //angle between segment i and y axis. This one needs to depend on curvature.
+            let o = add(origin, mult(unitVecFromAngle(a + angle), h))
+            rayLineIntersect(ray, o, a + angle,  segmentLength)
+            let intersectionData = rayLineIntersect(ray, o, a ,  -segmentLength) //spara intersection data för segment 1
+       if(intersectionData.dist > 1e-6 && intersectionData.dist < closestIntersectionData.dist) {
+            closestIntersectionData = intersectionData;
+        }
+       }
+        return closestIntersectionData;
 
 
     }

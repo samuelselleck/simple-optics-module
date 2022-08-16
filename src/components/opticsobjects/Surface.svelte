@@ -5,7 +5,7 @@
     import { idealMode } from '../../stores'
     export let properties;
     $: h = properties.height
-    let w = 100;
+    let w = 1000000;
 
     $: path = () => {
         if($idealMode) {
@@ -18,19 +18,23 @@
                     h${-w}
                     z`
             } else if (r > 0) { //Convex
-                r = Math.max(-properties.curve*4, h)
+                //r = Math.max(-properties.curve*4, h)
+                r=h/2
                 return`
-                    M0,${-h/2}
-                    a${r},${r} 0 0,0 0,${h},${w}
+                    M${0},${-h/2}
+                    a${-r},${-r} 0 0,0 0,${h}
+                    h${w}
+                    v${-h}
                     z`
 
             } else { //Concave
-                r = Math.max(properties.curve*4, h);
-                let d = r - Math.sqrt(r*r - h*h/4) + 1
+                //r = Math.max(properties.curve*4, h);
+                r=-h/2
+                let d = -r //- Math.sqrt(r*r - h*h/4) //+ 1
                 return`
-                    M${-d},${h/2} 
-                    a${r},${r} 0 0,0 0,-${h}
-                    h${d + 20}
+                    M${0},${h/2} 
+                    a${-r},${-r} 0 0,0 0,-${h}
+                    h${w}
                     v${h}
                     z`
             }
@@ -47,8 +51,8 @@
 
 <OpticsObject {properties}>
     <svelte:fragment slot="object">
-        <rect fill="url(#glass)" width={10000} height={properties.height} x={0} y={-properties.height/2}/>   
-    <path fill="url(#glass)" d={path()} x={0} y={-properties.height/2}/> <!--<path width={1000000} height={properties.height} x={0} y={-properties.height/2}/>-->
+        
+    <path fill="url(#surface)" d={path()} x={0} y={-properties.height/2}/> <!--<path width={1000000} height={properties.height} x={0} y={-properties.height/2}/>-->
     </svelte:fragment>
     <svelte:fragment slot="local">
         <!--Height-->

@@ -124,10 +124,10 @@
 <svg class="fill canvas" on:mousewheel={panzoom.zoomWithWheel} bind:this={$svgCanvas} xmlns="http://www.w3.org/2000/svg">
     <g bind:this={$zoomgroup} on:panzoomchange={zoomchanged}>
         <GlobalSVG {edge} snap={$snapToCenterline}/>    
-        <RayLayer {apparatus}/>
         {#each apparatus as o (o.properties.id)}
             <svelte:component this={definitions.get(o.type).component} properties={o.properties}/>
         {/each}
+        <RayLayer {apparatus}/>
     </g>
 </svg>
 
